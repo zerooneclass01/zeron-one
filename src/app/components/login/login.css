@@ -1,0 +1,66 @@
+.main-wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0f0f0f;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-box {
+  background-color: #1a1a1a;
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  border: 1px solid #2a2a2a;
+}
+
+.avatar-circle {
+  background-color: #ef232c;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 15px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ajusta a imagem sem cortar as bordas */
+  padding: 10px;       /* Dá um respiro para o logo não encostar na borda */
+}
+
+h1 { color: white; margin: 0; font-size: 2rem; }
+p { color: #777; margin-bottom: 30px; font-size: 0.9rem; }
+
+.form-field { text-align: left; margin-bottom: 20px; }
+label { display: block; color: white; margin-bottom: 8px; font-size: 0.8rem; }
+
+input {
+  width: 100%;
+  background-color: #121212;
+  border: 1px solid #333;
+  padding: 12px;
+  border-radius: 6px;
+  color: white;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  width: 100%;
+  background-color: #ef232c;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}

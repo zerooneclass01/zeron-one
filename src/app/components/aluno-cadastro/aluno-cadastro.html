@@ -1,0 +1,55 @@
+<div class="modal-overlay" (click)="fechar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div *ngIf="mensagem" class="alert alert-{{tipoMensagem}} mb-3" role="alert">
+      {{ mensagem }}
+    </div>
+
+    <div class="modal-header">
+      <h2><i class="fas fa-user-graduate"></i> Novo Aluno</h2>
+
+    </div>
+
+    <form (ngSubmit)="salvar()">
+      <div class="form-group">
+        <label>Nome Completo</label>
+        <input type="text" [(ngModel)]="novoAluno.nome" name="nome" required placeholder="Ex: Mariana Souza">
+      </div>
+
+      <div class="form-group flex-1">
+        <label>Data de Nascimento</label>
+        <input type="date" [(ngModel)]="novoAluno.dataNascimento" name="dataNascimento" class="form-control">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-2">
+          <label>E-mail</label>
+          <input type="email" [(ngModel)]="novoAluno.email" name="email" placeholder="email@escola.com">
+        </div>
+        <div class="form-group flex-1">
+          <label>Telefone</label>
+          <input type="text" [(ngModel)]="novoAluno.telefone" name="telefone" placeholder="11912345678">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Turma</label>
+          <select [(ngModel)]="novoAluno.turmaId" name="id" class="custom-select">
+            <option [ngValue]="null">Sem Turma (Individual)</option>
+            <option *ngFor="let t of turmas" [ngValue]="t.id">{{ t.nome }}</option>
+          </select>
+        </div>
+        <div class="form-group flex-1">
+          <label>Vencimento (Dia)</label>
+          <input type="number" [(ngModel)]="novoAluno.diaVencimento" name="diaVencimento" min="1" max="31">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancelar" (click)="fechar()">Cancelar</button>
+        <button type="submit" class="btn-salvar">Salvar Cadastro</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,102 @@
+/* --- Cores e Reset --- */
+.gestao-container {
+  background-color: #121212;
+  color: #ffffff;
+  min-height: 100vh;
+  padding: 1.5rem;
+  font-family: sans-serif;
+}
+
+/* --- Cabeçalho --- */
+.gestao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.back-link { color: #fff; text-decoration: none; font-size: 0.9rem; }
+.header-titles h1 { font-size: 2.2rem; margin: 10px 0 5px 0; }
+.header-titles p { color: #888; margin: 0; }
+
+.btn-novo-aluno {
+  background-color: #e50914;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Busca --- */
+.search-input-wrapper { position: relative; width: 100%; margin-bottom: 2rem; }
+.search-icon { position: absolute; left: 15px; top: 15px; color: #888; }
+.search-input {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  color: #fff;
+  width: 100%;
+  padding: 12px 45px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* --- Cards (O segredo da responsividade) --- */
+.aluno-card {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #2a2a2a; /* Linha sutil entre cards */
+  padding: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.aluno-card:hover { background-color: #252525; }
+
+.aluno-card-main { display: flex; align-items: center; gap: 1.2rem; }
+
+.avatar-circle {
+  width: 50px; height: 50px;
+  background-color: #e50914;
+  border-radius: 50%;
+  display: flex; justify-content: center; align-items: center;
+  font-size: 1.2rem; font-weight: bold;
+}
+
+.aluno-info h3 { margin: 0; font-size: 1.1rem; }
+.aluno-info p { color: #888; margin: 5px 0 0 0; font-size: 0.9rem; }
+
+.aluno-card-suffix { display: flex; align-items: center; gap: 1.5rem; }
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border: 1px solid transparent;
+}
+.status-badge.active { color: #28a745; border-color: #28a745; background: rgba(40,167,69,0.1); }
+.status-badge.inactive { color: #e50914; border-color: #e50914; background: rgba(229,9,20,0.1); }
+
+.arrow-icon { color: #444; }
+
+/* --- MEDIA QUERY: Celular --- */
+@media (max-width: 600px) {
+  .gestao-header { flex-direction: column; gap: 1rem; }
+  .btn-novo-aluno { width: 100%; justify-content: center; }
+  
+  .aluno-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .aluno-card-suffix { 
+    width: 100%; 
+    justify-content: space-between; 
+    border-top: 1px solid #2a2a2a;
+    padding-top: 0.8rem;
+  }
+}

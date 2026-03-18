@@ -1,0 +1,100 @@
+/* Fundo da página e containers */
+.container-fluid {
+  background-color: #000000 !important;
+  min-height: 100vh;
+}
+
+.bg-card {
+  background-color: #121212 !important;
+  border: 1px solid #1f1f1f !important;
+  border-radius: 12px !important;
+}
+
+/* Cards de Status (Financeiro) */
+.card-status {
+  background-color: #121212;
+  border: 1px solid #222 !important;
+  border-top-width: 1px !important;
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: 100%;
+  transition: transform 0.2s;
+}
+
+/* Bordas coloridas específicas */
+.border-success { border-bottom: 2px solid #2e7d32 !important; border-left: 2px solid #2e7d32 !important; }
+.border-danger { border-bottom: 2px solid #c62828 !important; border-left: 2px solid #c62828 !important; }
+.border-warning { border-bottom: 2px solid #fbc02d !important; border-left: 2px solid #fbc02d !important; }
+
+/* Tabela Estilizada */
+.table-responsive {
+  border: none;
+}
+
+.table-custom {
+  width: 100%;
+  color: #fff;
+  border-collapse: separate;
+  border-spacing: 0 8px; /* Cria o espaço entre as linhas */
+}
+
+.table-custom thead th {
+  color: #666;
+  font-size: 12px;
+  text-transform: uppercase;
+  border: none;
+  padding: 12px;
+}
+
+.table-custom tbody tr {
+  background-color: #121212;
+  transition: background 0.3s;
+}
+
+.table-custom tbody td {
+  padding: 16px 12px;
+  border-top: 1px solid #1f1f1f;
+  border-bottom: 1px solid #1f1f1f;
+}
+
+/* Arredondamento das bordas das linhas da tabela */
+.table-custom tbody tr td:first-child { border-left: 1px solid #1f1f1f; border-radius: 8px 0 0 8px; }
+.table-custom tbody tr td:last-child { border-right: 1px solid #1f1f1f; border-radius: 0 8px 8px 0; }
+
+/* Status Badges (Pílulas) */
+.badge-status {
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+}
+
+.badge-status.pago { background: rgba(46, 125, 50, 0.2); color: #4caf50; border-color: #2e7d32; }
+.badge-status.atrasado { background: rgba(198, 40, 40, 0.2); color: #e53935; border-color: #c62828; }
+.badge-status.pendente { background: rgba(251, 192, 45, 0.15); color: #fbc02d; border-color: #fbc02d; }
+
+/* Botões */
+.btn-success-custom {
+  background-color: #2ecc71;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+}
+
+.btn-voltar {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 50px;
+  padding: 4px 15px;
+  font-size: 13px;
+}
+
+.color-name{
+  color: #fff;
+}

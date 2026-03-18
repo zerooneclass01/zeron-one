@@ -1,0 +1,186 @@
+/* Ajuste no Wrapper para telas menores */
+.dashboard-wrapper {
+  background-color: #0d0d0d;
+  min-height: 100vh;
+  padding: 40px 5%; /* Diminuí de 10% para 5% para ganhar espaço no mobile */
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Header Responsivo */
+.db-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap; /* Permite que o botão "Sair" caia para baixo se não houver espaço */
+  gap: 20px;
+}
+
+/* Grid Inteligente */
+.card-grid {
+  display: grid;
+  /* O segredo: usamos 100% no mobile e limitamos o tamanho no PC */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+  gap: 20px;
+  width: 100%;
+}
+
+/* Card Horizontal Adaptável */
+.card-horizontal {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Diminuído levemente para telas estreitas */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.card-horizontal:hover {
+  background-color: #252525;
+  border-color: #333;
+  transform: translateY(-2px); /* Efeito sutil de flutuação no PC */
+}
+
+/* Ajuste de texto para não quebrar feio */
+.card-info h3 { 
+  margin: 0; 
+  font-size: 1rem; /* Diminuído de 1.1 para 1.0 para caber melhor no mobile */
+}
+
+.card-info p { 
+  margin: 2px 0 0; 
+  color: #777; 
+  font-size: 0.8rem; /* Diminuído para manter a hierarquia visual */
+}
+
+/* MEDIA QUERIES: Ajustes específicos para Celular */
+@media (max-width: 480px) {
+  .dashboard-wrapper {
+    padding: 20px 15px; /* Menos recuo nas bordas do celular */
+  }
+
+  .header-titles h1 {
+    font-size: 1.4rem;
+  }
+
+  .card-horizontal {
+    padding: 15px; /* Card mais compacto no celular */
+  }
+
+  .icon-box {
+    width: 45px; 
+    height: 45px;
+    font-size: 1.2rem;
+  }
+}
+
+/* --- Paleta de Cores dos Ícones --- */
+
+/* Chamada - Verde (Sucesso/Presença) */
+.green i { 
+  color: #4caf50; 
+  text-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+}
+
+/* Financeiro - Amarelo (Dinheiro/Atenção) */
+.yellow i { 
+  color: #fbc02d; 
+  text-shadow: 0 0 15px rgba(251, 192, 45, 0.2);
+}
+
+/* Alunos - Vermelho (Marca Zero One) */
+.red i { 
+  color: #ef232c; 
+  text-shadow: 0 0 15px rgba(239, 35, 44, 0.2);
+}
+
+/* Professores - Azul (Autoridade/Confiança) */
+.blue i { 
+  color: #00d2ff; 
+  text-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+}
+
+/* Turmas - Roxo (Organização/Grupos) */
+.purple i { 
+  color: #bf5af2; 
+  text-shadow: 0 0 15px rgba(191, 90, 242, 0.2);
+}
+
+/* Perfil/Usuários - Cinza (Configurações) */
+.gray i { 
+  color: #9e9e9e; 
+  text-shadow: 0 0 15px rgba(158, 158, 158, 0.2);
+}
+
+/* Ajuste no Box do Ícone para destacar a cor */
+.icon-box {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Título da Página em Vermelho */
+.red-text {
+  color: #ef232c;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Botão de Sair Minimalista */
+.btn-sair {
+  background: transparent; /* Remove qualquer fundo */
+  border: none;             /* Remove a borda totalmente */
+  color: #ef232c;           /* Vermelho oficial */
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: opacity 0.2s ease;
+  outline: none;            /* Remove o contorno de clique */
+}
+
+.btn-sair:hover {
+  opacity: 0.8;             /* Efeito suave ao passar o mouse */
+  background: transparent;  /* Garante que não apareça fundo no hover */
+}
+
+.btn-sair i {
+  font-size: 1.1rem;
+}/* Título da Página em Vermelho */
+.red-text {
+  color: #ef232c;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Botão de Sair Minimalista */
+.btn-sair {
+  background: transparent; /* Remove qualquer fundo */
+  border: none;             /* Remove a borda totalmente */
+  color: #ef232c;           /* Vermelho oficial */
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: opacity 0.2s ease;
+  outline: none;            /* Remove o contorno de clique */
+}
+
+.btn-sair:hover {
+  opacity: 0.8;             /* Efeito suave ao passar o mouse */
+  background: transparent;  /* Garante que não apareça fundo no hover */
+}
+
+.btn-sair i {
+  font-size: 1.1rem;
+}

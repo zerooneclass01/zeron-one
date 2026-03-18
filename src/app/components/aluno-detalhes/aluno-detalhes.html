@@ -1,0 +1,101 @@
+<div class="container-fluid px-2 py-3 p-md-4 bg-dark text-white min-vh-100" *ngIf="aluno; else carregando">
+  
+  <div *ngIf="mensagem" class="alert alert-{{tipoMensagem}} alert-floating shadow-lg">
+    {{ mensagem }}
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+    <button class="btn-voltar" (click)="voltar()">
+      <i class="fas fa-arrow-left me-1"></i> Voltar para Alunos
+    </button>
+    <button class="btn btn-warning btn-sm rounded-pill fw-bold" (click)="abrirModalEdicao()">
+      <i class="fas fa-user-edit me-1"></i> Editar Aluno
+    </button>
+  </div>
+
+  <div class="card bg-card border-0 rounded-4 mb-4 p-4 shadow-sm">
+    <div class="d-flex flex-column flex-md-row align-items-center gap-3 gap-md-4 text-center text-md-start">
+      <div class="avatar-circle shadow color-name">{{ aluno?.nome | slice:0:1 }}</div>
+      <div class="flex-grow-1">
+        <h1 class="h3 fw-bold mb-1 color-name">{{ aluno?.nome }}</h1>
+        <p class="text-secondary mb-0 d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+          <span>{{ aluno?.nomeTurma || 'Sem Turma' }}</span>
+          <span class="d-none d-md-inline">•</span>
+          <span>{{ aluno?.telefone }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-5">
+    <div class="col-12 col-md-4">
+      <div class="card-status border-success p-3 h-100">
+        <span class="badge-status pago mb-2">PAGO</span>
+        <h2 class="h3 mt-2 mb-0 fw-bold">R$ {{ resumo.pago | number:'1.2-2' }}</h2>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card-status border-danger p-3 h-100">
+        <span class="badge-status atrasado mb-2">ATRASADO</span>
+        <h2 class="h3 mt-2 mb-0 fw-bold">R$ {{ resumo.atrasado | number:'1.2-2' }}</h2>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card-status border-warning p-3 h-100">
+        <span class="badge-status pendente mb-2">PENDENTE</span>
+        <h2 class="h3 mt-2 mb-0 fw-bold">R$ {{ resumo.pendente | number:'1.2-2' }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="card bg-card border-0 rounded-4 p-3 p-md-4 shadow-sm">
+    <h4 class="mb-4 d-flex align-items-center text-danger">
+      <i class="fas fa-dollar-sign me-2"></i> Mensalidades 2026
+    </h4>
+    <div class="table-responsive">
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th>MÊS</th>
+            <th>VALOR</th>
+            <th>VENCIMENTO</th>
+            <th>DATA PGTO</th>
+            <th>STATUS</th>
+            <th class="text-end px-3">AÇÕES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of mensalidades; trackBy: trackByMensalidadeId">
+            <td class="fw-bold">{{ m?.mesReferencia }}</td>
+            <td class="text-nowrap">R$ {{ m?.valor | number:'1.2-2' }}</td>
+            <td class="text-muted">{{ m?.dataVencimento | date:'dd/MM/yyyy' }}</td>
+            <td class="text-muted">{{ m?.dataPagamento ? (m?.dataPagamento | date:'dd/MM/yyyy') : '-' }}</td>
+            <td>
+              <span class="badge-status" [ngClass]="(m?.status?.toString() || '').toLowerCase()">
+                {{ m?.status }}
+              </span>
+            </td>
+            <td class="text-end px-3">
+              <button class="btn-success-custom" 
+                      *ngIf="m?.status !== 'Pago'"
+                      (click)="marcarPago(m.id)">
+                Marcar Pago
+              </button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill" 
+                      *ngIf="m?.status === 'Pago'"
+                      (click)="marcarPago(m.id)">
+                Desfazer
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #carregando>
+  <div class="d-flex justify-content-center align-items-center min-vh-100 bg-black">
+    <div class="spinner-border text-danger" role="status"></div>
+  </div>
+</ng-template>

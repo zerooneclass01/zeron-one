@@ -1,0 +1,56 @@
+<div class="gestao-container">
+
+  <div class="gestao-header">
+    <div class="header-titles">
+      <a href="../dashboard/dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar</a>
+      <h1>Alunos</h1>
+      <p>Gerencie seus alunos e turmas</p>
+    </div>
+    <button class="btn-novo-aluno" (click)="abrirModal()">
+      <i class="fas fa-user-plus"></i> Novo Aluno
+    </button>
+    <app-aluno-cadastro *ngIf="exibirModal" (aoSalvar)="carregarAlunos()" (aoFechar)="exibirModal = false">
+    </app-aluno-cadastro>
+  </div>
+
+  <div class="search-bar-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" placeholder="Buscar aluno..." class="search-input" [(ngModel)]="filtro"
+        (input)="filtrarAlunos()">
+    </div>
+  </div>
+
+  <div class="alunos-list">
+
+    <div class="aluno-card" *ngFor="let aluno of alunosFiltrados" (click)="verDetalhes(aluno.id)">
+
+      <div class="aluno-card-main">
+        <div class="avatar-circle">{{ aluno.nome[0] }}</div>
+
+        <div class="aluno-info">
+          <h3>{{ aluno.nome }}</h3>
+          <p>{{ aluno.nomeTurma }} &nbsp; • &nbsp; {{ aluno.telefone }}</p>
+        </div>
+      </div>
+
+      <div class="aluno-card-suffix">
+        <span class="status-badge" [ngClass]="aluno.ativo ? 'active' : 'inactive'">
+          {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
+        </span>
+
+        <div class="finance-preview-mini">
+          <span class="value">{{ aluno.valorMensalidade | currency:'BRL' }}</span>
+        </div>
+
+        <i class="fas fa-arrow-right arrow-icon"></i>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="alunosFiltrados.length === 0">
+    <i class="fas fa-user-slash"></i>
+    <p>Nenhum aluno encontrado com o termo "{{ filtro }}".</p>
+  </div>
+</div>

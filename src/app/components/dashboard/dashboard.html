@@ -1,0 +1,77 @@
+<div class="dashboard-wrapper">
+ <header class="db-header">
+  <div class="header-left">
+    <div class="header-titles">
+      <h1 class="red-text">Dashboard</h1> <p>Bem-vindo, Professor</p>
+    </div>
+  </div>
+  
+  <button class="btn-sair" routerLink="/">
+    <i class="fas fa-sign-out-alt"></i> Sair
+  </button>
+</header>
+
+  <main class="card-grid">
+    <div class="card-horizontal" routerLink="/chamada">
+      <div class="icon-box green">
+        <i class="fas fa-book-open"></i>
+      </div>
+      <div class="card-info">
+        <h3>Chamada</h3>
+        <p>Registrar presença dos alunos</p>
+      </div>
+    </div>
+
+    <div class="card-horizontal" routerLink="/financeiro">
+      <div class="icon-box yellow">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="card-info">
+        <h3>Financeiro</h3>
+        <p>Mensalidades e despesas</p>
+      </div>
+    </div>
+
+    <a class="card-horizontal" (click)="irParaAlunos()" style="cursor: pointer;">
+      <div class="icon-box red">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="card-info">
+        <h3>Alunos</h3>
+        <p>Gerenciar alunos e turmas</p>
+      </div>
+    </a>
+
+    <div class="card-horizontal" routerLink="/usuarios">
+      <div class="icon-box gray">
+        <i class="fas fa-user-cog"></i>
+      </div>
+      <div class="card-info">
+        <h3>Perfil</h3>
+        <p>Configurações e senha e Criar Usuario</p>
+      </div>
+    </div>
+
+    <div class="card-horizontal" routerLink="/Professor">
+      <div class="icon-box blue">
+        <i class="fas fa-chalkboard-teacher"></i>
+      </div>
+      <div class="card-info">
+        <h3>Professor</h3>
+        <p>Gerenciar Professor</p>
+      </div>
+    </div>
+
+    <div class="card-horizontal" routerLink="/turmas">
+      <div class="icon-box purple">
+        <i class="fas fa-layer-group"></i>
+      </div>
+      <div class="card-info">
+        <h3>Turmas</h3>
+        <p>Gerenciar Turmas</p>
+      </div>
+    </div>
+
+  </main>
+
+</div>
