@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Aluno } from '../models/aluno.model';
 import { environment } from '../../environments/environment';
+import { AlunoResponser } from '../models/AlunoResponser.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +15,13 @@ export class AlunoService {
   constructor(private http: HttpClient) { }
 
   // [HttpGet("ObterTodos")]
-  obterTodos(): Observable<Aluno[]> {
-    return this.http.get<Aluno[]>(`${this.API}/ObterTodos`);
+  obterTodos(): Observable<AlunoResponser[]> {
+    return this.http.get<AlunoResponser[]>(`${this.API}/ObterTodos`);
   }
 
   // [HttpGet("ObterAluno/{id:guid}")]
-  obterPorId(id: string): Observable<Aluno> {
-    return this.http.get<Aluno>(`${this.API}/ObterAluno/${id}`);
+  obterPorId(id: string): Observable<AlunoResponser> {
+    return this.http.get<AlunoResponser>(`${this.API}/ObterAluno/${id}`);
   }
 
   // [HttpPost]

@@ -1,4 +1,4 @@
-<div class="container-fluid px-2 py-3 p-md-4 bg-dark text-white min-vh-100" *ngIf="aluno; else carregando">
+<div class="container-fluid px-2 py-3 p-md-4 bg-dark text-white min-vh-100" *ngIf="response; else carregando">
   
   <div *ngIf="mensagem" class="alert alert-{{tipoMensagem}} alert-floating shadow-lg">
     {{ mensagem }}
@@ -15,13 +15,15 @@
 
   <div class="card bg-card border-0 rounded-4 mb-4 p-4 shadow-sm">
     <div class="d-flex flex-column flex-md-row align-items-center gap-3 gap-md-4 text-center text-md-start">
-      <div class="avatar-circle shadow color-name">{{ aluno?.nome | slice:0:1 }}</div>
+      <div class="avatar-circle shadow color-name">{{ response.nome | slice:0:1 }}</div>
       <div class="flex-grow-1">
-        <h1 class="h3 fw-bold mb-1 color-name">{{ aluno?.nome }}</h1>
+        <h1 class="h3 fw-bold mb-1 color-name">{{ response?.nome }}</h1>
         <p class="text-secondary mb-0 d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
-          <span>{{ aluno?.nomeTurma || 'Sem Turma' }}</span>
+          <span>{{ response?.nomeTurma || 'Sem Turma' }}</span>
+             <span class="d-none d-md-inline">•</span>
+          <span> Idade: {{response.idade}}</span>
           <span class="d-none d-md-inline">•</span>
-          <span>{{ aluno?.telefone }}</span>
+          <span>{{ response.telefone }}</span>
         </p>
       </div>
     </div>
@@ -99,3 +101,4 @@
     <div class="spinner-border text-danger" role="status"></div>
   </div>
 </ng-template>
+

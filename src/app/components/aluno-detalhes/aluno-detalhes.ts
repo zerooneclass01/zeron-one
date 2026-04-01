@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. Adicionado ChangeDetectorRef
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 
 import { AlunoService } from '../../services/aluno';
 import { FinanceiroService } from '../../services/financeiro';
-import { Aluno } from '../../models/aluno.model';
+import { AlunoResponser } from '../../models/AlunoResponser.model';
 import { Mensalidade } from '../../models/finaceiro.model';
 
 @Component({
@@ -17,8 +17,9 @@ import { Mensalidade } from '../../models/finaceiro.model';
   styleUrl: './aluno-detalhes.css',
 })
 export class AlunoDetalhes implements OnInit {
-  aluno: Aluno | null = null;
-  alunoEdicao: any = {}; 
+  // Centralizamos tudo no 'response' para evitar conflitos de tipos
+  response: AlunoResponser | null = null;
+  alunoEdicao: any = {};
   exibirModal: boolean = false;
   mensalidades: Mensalidade[] = [];
   resumo = { pago: 0, atrasado: 0, pendente: 0 };
@@ -30,15 +31,22 @@ export class AlunoDetalhes implements OnInit {
     private router: Router,
     private alunoService: AlunoService,
     private financeiroService: FinanceiroService,
-    private cdRef: ChangeDetectorRef // 2. Injetado aqui
-  ) {}
+    private cdRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // Pequeno delay ou uso do detector resolvem o erro NG0100
-      this.carregarDados(id);
+      // O setTimeout garante que o Angular termine o ciclo de checagem inicial
+      // resolvendo de vez o erro NG0100.
+      setTimeout(() => this.carregarDados(id!), 0);
     }
+  }
+  
+  voltar(): void {
+
+    this.router.navigate(['/aluno']);
+
   }
 
   carregarDados(id: string): void {
@@ -47,26 +55,21 @@ export class AlunoDetalhes implements OnInit {
       mensalidades: this.financeiroService.listarPorAluno(id)
     }).subscribe({
       next: (res) => {
-        // Atribuímos os dados
-        this.aluno = res.aluno;
+        this.response = res.aluno;
         this.mensalidades = res.mensalidades;
         this.calcularResumo();
-
-        // 3. Forçamos a detecção de mudanças para evitar o erro de ciclo
-        this.cdRef.detectChanges(); 
+        this.cdRef.detectChanges();
       },
       error: () => this.exibirNotificacao('Erro ao carregar dados', 'danger')
     });
   }
 
-  voltar(): void {
-    this.router.navigate(['/aluno']);
-  }
-
   abrirModalEdicao(): void {
-    if (this.aluno) {
-      this.alunoEdicao = { ...this.aluno };
+    if (this.response) {
+      // Criamos uma cópia para o formulário não alterar a tela antes de salvar
+      this.alunoEdicao = { ...this.response };
       this.exibirModal = true;
+      this.cdRef.detectChanges();
     }
   }
 
@@ -75,13 +78,14 @@ export class AlunoDetalhes implements OnInit {
   }
 
   salvar(): void {
-    if (this.aluno?.id) {
-      this.alunoService.atualizar(this.aluno.id, this.alunoEdicao).subscribe({
+    if (this.response?.id) {
+      this.alunoService.atualizar(this.response.id, this.alunoEdicao).subscribe({
         next: () => {
-          this.aluno = { ...this.alunoEdicao };
+          // Atualiza a visualização com os novos dados salvos
+          this.response = { ...this.alunoEdicao };
           this.exibirNotificacao('Aluno atualizado com sucesso!', 'success');
           this.fechar();
-          this.cdRef.detectChanges(); // Atualiza a tela após salvar
+          this.cdRef.detectChanges();
         },
         error: () => this.exibirNotificacao('Erro ao atualizar aluno', 'danger')
       });
@@ -91,31 +95,31 @@ export class AlunoDetalhes implements OnInit {
   calcularResumo(): void {
     if (!this.mensalidades) return;
 
+    // Convertemos para String e comparamos com o valor desejado
     this.resumo.pago = this.mensalidades
-      .filter(m => m.status === 'Pago')
+      .filter(m => String(m.status) === 'Pago' || String(m.status) === '1')
       .reduce((sum, m) => sum + m.valor, 0);
 
     this.resumo.atrasado = this.mensalidades
-      .filter(m => m.status === 'Atrasado')
+      .filter(m => String(m.status) === 'Atrasado' || String(m.status) === '2')
       .reduce((sum, m) => sum + m.valor, 0);
 
     this.resumo.pendente = this.mensalidades
-      .filter(m => m.status === 'Pendente')
+      .filter(m => String(m.status) === 'Pendente' || String(m.status) === '0')
       .reduce((sum, m) => sum + m.valor, 0);
   }
-
   marcarPago(id: string): void {
     this.financeiroService.pagarMensalidade(id).subscribe({
       next: () => {
-        this.exibirNotificacao('Status atualizado!', 'success');
+        this.exibirNotificacao('Status financeiro atualizado!', 'success');
         this.recarregarMensalidades();
       }
     });
   }
 
   private recarregarMensalidades(): void {
-    if (this.aluno?.id) {
-      this.financeiroService.listarPorAluno(this.aluno.id).subscribe(res => {
+    if (this.response?.id) {
+      this.financeiroService.listarPorAluno(this.response.id).subscribe(res => {
         this.mensalidades = res;
         this.calcularResumo();
         this.cdRef.detectChanges();

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlunoService } from '../../services/aluno';
 import { Aluno } from '../../models/aluno.model';
+import { AlunoResponser } from '../../models/AlunoResponser.model';
 import { AlunoCadastroComponent } from '../aluno-cadastro/aluno-cadastro';
 import { AlunoDetalhes } from '../aluno-detalhes/aluno-detalhes';
 
@@ -17,7 +18,8 @@ import { AlunoDetalhes } from '../aluno-detalhes/aluno-detalhes';
 })
 export class AlunoComponent implements OnInit {
   alunos: Aluno[] = [];
-  alunosFiltrados: Aluno[] = [];
+  responser: AlunoResponser []=[];
+  alunosFiltrados: AlunoResponser[] = [];
   turmas: any[] = []; // Lista de turmas para o select
   filtro: string = '';
 
@@ -49,7 +51,7 @@ export class AlunoComponent implements OnInit {
   carregarAlunos() {
     this.alunoService.obterTodos().subscribe({
       next: (data) => {
-        this.alunos = data;
+        this.responser = data;
         this.alunosFiltrados = [...data];
         this.cdRef.detectChanges();
       },
@@ -69,7 +71,7 @@ export class AlunoComponent implements OnInit {
 
   filtrarAlunos() {
     const termo = this.filtro.toLowerCase();
-    this.alunosFiltrados = this.alunos.filter(a =>
+    this.alunosFiltrados = this.responser.filter(a =>
       a.nome.toLowerCase().includes(termo) ||
       a.matricula?.toString().includes(termo)
     );
