@@ -37,8 +37,13 @@ export class AlunoService {
     return this.http.delete<string>(`${this.API}/Remover/${id}`);
   }
 
-  // [HttpPatch("VinculaTurmaAluno/{alunoid:guid}/{turmaid:guid}")]
-  vincularTurma(alunoId: string, turmaId: string): Observable<string> {
-    return this.http.patch<string>(`${this.API}/VinculaTurmaAluno/${alunoId}/${turmaId}`, {});
+  // Altera Turma (PUT)
+  alterarTurma(alunoId: string, turmaId: string): Observable<any> {
+    return this.http.put(`${this.API}/altera-Turma/${alunoId}/${turmaId}`, {});
+  }
+
+  // Vincula Turma (POST)
+  vincularTurma(alunoId: string, turmaId: string): Observable<any> {
+    return this.http.post(`${this.API}/VinculaTurmaAluno/${alunoId}/${turmaId}`, {});
   }
 }

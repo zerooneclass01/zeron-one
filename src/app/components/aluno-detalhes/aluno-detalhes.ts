@@ -8,11 +8,12 @@ import { AlunoService } from '../../services/aluno';
 import { FinanceiroService } from '../../services/financeiro';
 import { AlunoResponser } from '../../models/AlunoResponser.model';
 import { Mensalidade } from '../../models/finaceiro.model';
+import { AlunoAtualizar } from '../aluno-atualizar/aluno-atualizar';
 
 @Component({
   selector: 'app-aluno-detalhes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AlunoAtualizar],
   templateUrl: './aluno-detalhes.html',
   styleUrl: './aluno-detalhes.css',
 })
@@ -41,8 +42,9 @@ export class AlunoDetalhes implements OnInit {
       // resolvendo de vez o erro NG0100.
       setTimeout(() => this.carregarDados(id!), 0);
     }
+
   }
-  
+
   voltar(): void {
 
     this.router.navigate(['/aluno']);
@@ -56,19 +58,29 @@ export class AlunoDetalhes implements OnInit {
     }).subscribe({
       next: (res) => {
         this.response = res.aluno;
-        this.mensalidades = res.mensalidades;
+        this.mensalidades = res.mensalidades.sort((a, b) => {
+          return new Date(a.vencimento).getTime() - new Date(b.vencimento).getTime();
+        });
         this.calcularResumo();
         this.cdRef.detectChanges();
       },
       error: () => this.exibirNotificacao('Erro ao carregar dados', 'danger')
     });
+
   }
+  statusTraducao: any = {
+    2: 'Pendente',
+    0: 'Pago',
+    1: 'Atrasado',
+    'Pendente': 'Pendente', // Caso a API mude para string no futuro
+    'Pago': 'Pago',
+    'Atrasado': 'Atrasado'
+  };
 
   abrirModalEdicao(): void {
+    this.exibirModal = true;
     if (this.response) {
-      // Criamos uma cópia para o formulário não alterar a tela antes de salvar
       this.alunoEdicao = { ...this.response };
-      this.exibirModal = true;
       this.cdRef.detectChanges();
     }
   }
@@ -97,7 +109,7 @@ export class AlunoDetalhes implements OnInit {
 
     // Convertemos para String e comparamos com o valor desejado
     this.resumo.pago = this.mensalidades
-      .filter(m => String(m.status) === 'Pago' || String(m.status) === '1')
+      .filter(m => String(m.status) === 'Pago' || String(m.status) === '0')
       .reduce((sum, m) => sum + m.valor, 0);
 
     this.resumo.atrasado = this.mensalidades
@@ -105,7 +117,7 @@ export class AlunoDetalhes implements OnInit {
       .reduce((sum, m) => sum + m.valor, 0);
 
     this.resumo.pendente = this.mensalidades
-      .filter(m => String(m.status) === 'Pendente' || String(m.status) === '0')
+      .filter(m => String(m.status) === 'Pendente' || String(m.status) === '1')
       .reduce((sum, m) => sum + m.valor, 0);
   }
   marcarPago(id: string): void {
@@ -124,6 +136,7 @@ export class AlunoDetalhes implements OnInit {
         this.calcularResumo();
         this.cdRef.detectChanges();
       });
+
     }
   }
 

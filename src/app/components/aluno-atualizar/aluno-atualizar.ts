@@ -1,86 +1,142 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, formatDate } from '@angular/common';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { AlunoService } from '../../services/aluno';
+import { TurmaService } from '../../services/turma';
 
 @Component({
   selector: 'app-aluno-atualizar',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './aluno-atualizar.html',
-  styleUrl: './aluno-atualizar.css',
+  styleUrls: ['./aluno-atualizar.css']
 })
 export class AlunoAtualizar implements OnInit {
-  // Objeto que vai receber o JSON completo da API
-  alunoEdicao: any = {};
+  
+  private _alunoEdicao: any;
 
-  id: string | null = null;
+  @Input() set alunoEdicao(value: any) {
+    if (value) {
+      this._alunoEdicao = { ...value };
+      // Chamamos o inicializar, mas com uma proteção interna
+      this.inicializarDados();
+    }
+  }
+
+  get alunoEdicao() {
+    return this._alunoEdicao;
+  }
+
+  @Output() aoSalvar = new EventEmitter<void>();
+  @Output() aoFechar = new EventEmitter<void>();
+
+  turmas: any[] = [];
+  idTurmaOriginal: string | null = null;
   mensagem: string = '';
   tipoMensagem: string = 'success';
+  readonly GUID_EMPTY = "00000000-0000-0000-0000-000000000000";
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private alunoService: AlunoService
-  ) {}
+    private alunoService: AlunoService,
+    private turmaService: TurmaService,
+    private cdr: ChangeDetectorRef // Injeção obrigatória
+  ) { }
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id) {
-      this.carregarDados();
+    this.carregarTurmas();
+  }
+
+  private inicializarDados() {
+    if (!this._alunoEdicao) return;
+
+    // 1. Formata a Data (YYYY-MM-DD) para o input HTML
+    if (this._alunoEdicao.dataNascimento && typeof this._alunoEdicao.dataNascimento === 'string') {
+      this._alunoEdicao.dataNascimento = this._alunoEdicao.dataNascimento.split('T')[0];
+    }
+
+    // 2. Normaliza a Turma
+    if (this._alunoEdicao.turmaId === this.GUID_EMPTY || !this._alunoEdicao.turmaId) {
+      this._alunoEdicao.turmaId = null;
+    }
+    this.idTurmaOriginal = this._alunoEdicao.turmaId;
+
+    // 3. PROTEÇÃO: Só chama detectChanges se o cdr já estiver injetado
+    if (this.cdr) {
+      this.cdr.detectChanges();
+      
+      // Garante a atualização após o modal abrir totalmente
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      }, 150);
     }
   }
 
-  carregarDados(): void {
-    if (this.id) {
-      this.alunoService.obterPorId(this.id).subscribe({
-        next: (res) => {
-          // Aqui entra o seu JSON completo
-          this.alunoEdicao = { ...res };
-          
-          // Tratamento para o input de data (HTML exige yyyy-MM-dd)
-          if (this.alunoEdicao.dataNascimento) {
-            this.alunoEdicao.dataNascimento = formatDate(
-              this.alunoEdicao.dataNascimento, 
-              'yyyy-MM-dd', 
-              'en-US'
-            );
-          }
-        },
-        error: () => this.exibirNotificacao('Erro ao carregar dados.', 'danger')
+  carregarTurmas() {
+    this.turmaService.obterTodas().subscribe({
+      next: (res) => {
+        this.turmas = res;
+        this.inicializarDados();
+      },
+      error: (err) => console.error("Erro turmas:", err)
+    });
+  }
+
+  compararTurmas = (t1: any, t2: any): boolean => {
+    return t1 === t2;
+  }
+
+  processarMudancaTurmaAutomatica(): void {
+    const novaTurmaId = this.alunoEdicao.turmaId;
+    const turmaAntigaId = this.idTurmaOriginal;
+
+    if (novaTurmaId === turmaAntigaId) return;
+
+    const ehVazio = (id: any) => !id || id === this.GUID_EMPTY;
+
+    // Lógica de vinculação automática
+    if (!ehVazio(novaTurmaId) && ehVazio(turmaAntigaId)) {
+      this.notificar('Vinculando...', 'info');
+      this.alunoService.vincularTurma(this.alunoEdicao.id, novaTurmaId).subscribe({
+        next: () => this.sucessoAutomatico('Vinculado!', novaTurmaId),
+        error: () => this.notificar('Erro ao vincular.', 'danger')
+      });
+    } else if (!ehVazio(novaTurmaId) && !ehVazio(turmaAntigaId)) {
+      this.notificar('Alterando...', 'info');
+      this.alunoService.alterarTurma(this.alunoEdicao.id, novaTurmaId).subscribe({
+        next: () => this.sucessoAutomatico('Alterado!', novaTurmaId),
+        error: () => this.notificar('Erro ao alterar.', 'danger')
       });
     }
   }
 
-  atualizar(): void {
-    if (this.id) {
-      // FILTRAGEM: Enviamos apenas o que o AlunoAtualizarModel do C# permite
-      // Ignoramos valorMensalidade, diaVencimento e turmaId
-      const modelParaEnviar = {
-        nome: this.alunoEdicao.nome,
-        email: this.alunoEdicao.email,
-        dataNascimento: this.alunoEdicao.dataNascimento,
-        telefone: this.alunoEdicao.telefone
-      };
-
-      this.alunoService.atualizar(this.id, modelParaEnviar).subscribe({
-        next: () => {
-          this.exibirNotificacao('Cadastro atualizado com sucesso!', 'success');
-          setTimeout(() => this.router.navigate(['/alunos']), 1500);
-        },
-        error: () => this.exibirNotificacao('Erro ao salvar no servidor.', 'danger')
-      });
-    }
+  private sucessoAutomatico(msg: string, novoId: any) {
+    this.notificar(msg, 'success');
+    this.idTurmaOriginal = novoId;
+    this.aoSalvar.emit();
   }
 
-  cancelar(): void {
-    this.router.navigate(['/alunos']);
+  salvar(): void {
+    if (!this.alunoEdicao?.id) return;
+    this.alunoService.atualizar(this.alunoEdicao.id, this.alunoEdicao).subscribe({
+      next: () => this.finalizar('Dados salvos!'),
+      error: () => this.notificar('Erro ao salvar.', 'danger')
+    });
   }
 
-  private exibirNotificacao(msg: string, tipo: string): void {
+  private finalizar(msg: string) {
+    this.notificar(msg, 'success');
+    setTimeout(() => this.aoSalvar.emit(), 1000);
+  }
+
+  notificar(msg: string, tipo: string) {
     this.mensagem = msg;
     this.tipoMensagem = tipo;
-    setTimeout(() => (this.mensagem = ''), 3000);
+    if (this.cdr) {
+      this.cdr.detectChanges();
+    }
+  }
+
+  cancelar() {
+    this.aoFechar.emit();
   }
 }

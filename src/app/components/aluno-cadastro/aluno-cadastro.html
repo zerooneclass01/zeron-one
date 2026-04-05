@@ -44,6 +44,15 @@
           <label>Vencimento (Dia)</label>
           <input type="number" [(ngModel)]="novoAluno.diaVencimento" name="diaVencimento" min="1" max="31">
         </div>
+
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Valor da Mensalidade</label>
+          <!-- 'step="0.01"' permite casas decimais como 250.50 -->
+          <input type="number" [(ngModel)]="novoAluno.valorMensalidade" name="valorMensalidade" step="0.01" min="0">
+        </div>
       </div>
 
       <div class="modal-actions">

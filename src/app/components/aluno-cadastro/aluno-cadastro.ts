@@ -75,4 +75,4 @@ export class AlunoCadastroComponent implements OnInit {
   fechar() {
     this.aoFechar.emit();
   }
-}
+}2

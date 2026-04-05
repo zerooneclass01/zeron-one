@@ -1,47 +1,61 @@
-<div class="container mt-4">
-  <div *ngIf="mensagem" class="alert alert-{{tipoMensagem}} mb-3">
-    {{ mensagem }}
-  </div>
+<div class="modal-overlay" (click)="cancelar()">
+  <div class="modal-content shadow-lg" (click)="$event.stopPropagation()">
 
-  <div class="card bg-dark text-white border-secondary shadow">
-    <div class="card-header border-secondary">
-      <h3 class="h5 mb-0"><i class="fas fa-user-edit me-2"></i>Atualizar Aluno</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="m-0 text-white"><i class="fas fa-user-edit text-danger me-2"></i> Atualizar Aluno</h3>
+      <button class="btn-fechar-x" (click)="cancelar()"><i class="fas fa-times"></i></button>
     </div>
-    
-    <div class="card-body">
-      <form (ngSubmit)="atualizar()">
-        
-        <div class="mb-3">
-          <label class="form-label text-secondary small">Nome Completo</label>
-          <input type="text" [(ngModel)]="alunoEdicao.nome" name="nome" 
-                 class="form-control bg-black text-white border-secondary" required>
-        </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label text-secondary small">Data de Nascimento</label>
-            <input type="date" [(ngModel)]="alunoEdicao.dataNascimento" name="dataNascimento" 
-                   class="form-control bg-black text-white border-secondary">
-          </div>
+    <div class="form-container">
+      <!-- Nome -->
+      <div class="form-group mb-3">
+        <label>Nome Completo</label>
+        <input type="text" [(ngModel)]="alunoEdicao.nome" name="nome">
+      </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label text-secondary small">Telefone</label>
-            <input type="text" [(ngModel)]="alunoEdicao.telefone" name="telefone" 
-                   class="form-control bg-black text-white border-secondary" placeholder="Ex: 11999999999">
-          </div>
+      <!-- Telefone e Data -->
+      <div class="form-row mb-3">
+        <div class="form-group flex-1">
+          <label>Data de Nascimento</label>
+          <!-- O name="dataNascimento" é obrigatório para o ngModel funcionar -->
+          <input type="date" [(ngModel)]="alunoEdicao.dataNascimento" name="dataNascimento">
         </div>
+        <div class="form-group flex-1">
+          <label>Telefone</label>
+          <input type="text" [(ngModel)]="alunoEdicao.telefone" name="telefone">
+        </div>
+      </div>
 
-        <div class="mb-4">
-          <label class="form-label text-secondary small">E-mail</label>
-          <input type="email" [(ngModel)]="alunoEdicao.email" name="email" 
-                 class="form-control bg-black text-white border-secondary">
+      <!-- E-mail e Mensalidade -->
+      <div class="form-row mb-3">
+        <div class="form-group flex-2">
+          <label>E-mail</label>
+          <input type="email" [(ngModel)]="alunoEdicao.email" name="email">
         </div>
+        <div class="form-group flex-1">
+          <label>Mensalidade (R$)</label>
+          <input type="number" [(ngModel)]="alunoEdicao.valorMensalidade" name="valorMensalidade">
+        </div>
+      </div>
 
-        <div class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-outline-light" (click)="cancelar()">Cancelar</button>
-          <button type="submit" class="btn btn-primary px-4">Salvar Alterações</button>
-        </div>
-      </form>
+      <select [(ngModel)]="alunoEdicao.turmaId" name="turmaId" class="form-select-custom" [compareWith]="compararTurmas"
+        (change)="processarMudancaTurmaAutomatica()">
+
+        <option [ngValue]="null">-- Sem Turma --</option>
+
+        <option *ngFor="let t of turmas" [value]="t.id">
+          {{ t.nome }}
+        </option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+        <button class="btn-salvar" (click)="salvar()">Salvar Alterações</button>
+      </div>
+    </div>
+
+    <!-- Mensagem de Feedback -->
+    <div *ngIf="mensagem" class="alert alert-{{tipoMensagem}} mt-3 mb-0 py-2">
+      <small>{{ mensagem }}</small>
     </div>
   </div>
 </div>

@@ -1,1 +1,90 @@
-<p>turma works!</p>
+<div class="gestao-container">
+  <!-- Cabeçalho Principal -->
+  <div class="gestao-header">
+    <div class="header-titles">
+      <a routerLink="/dashboard" class="back-link">
+        <i class="fas fa-arrow-left"></i> Voltar
+      </a>
+      <h1>Turmas</h1>
+      <p>Gerencie as turmas e vincule os professores responsáveis</p>
+    </div>
+    <button class="btn-nova-turma" (click)="abrirModal()">
+      <i class="fas fa-plus"></i> Nova Turma
+    </button>
+  </div>
+
+  <!-- Componente de Cadastro (Modal) -->
+  <app-turma-cadastro 
+    *ngIf="exibirModal" 
+    (aoSalvar)="aoSalvarTurma()" 
+    (aoFechar)="fecharModal()">
+  </app-turma-cadastro>
+
+  <!-- Barra de Pesquisa -->
+  <div class="search-bar-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        placeholder="Buscar turma pelo nome..." 
+        class="search-input" 
+        [(ngModel)]="filtro"
+        (input)="filtrarTurmas()">
+    </div>
+  </div>
+
+  <!-- Lista de Cards -->
+  <div class="turma-list">
+    <div *ngFor="let turma of turmasFiltradas" class="turma-item">
+      
+      <!-- Lado Esquerdo: Identificação e Horários (Clicável) -->
+      <div class="info-principal" (click)="irParaDetalhe(turma.id)" title="Clique para ver detalhes">
+        <div class="avatar-circle">{{ turma.nome.charAt(0) }}</div>
+        <div class="texto-wrapper">
+          <h3 class="turma-nome">{{ turma.nome }}</h3>
+          <div class="meta-dados">
+            <span class="info-tag">
+              <i class="far fa-clock"></i> {{ turma.horario }} | {{ turma.nivel }}
+            </span>
+            <span class="dias-tag">
+              <i class="far fa-calendar-alt"></i> {{ formatarDias(turma.diasDaAula) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Centro: Vínculo com Professor -->
+      <div class="professor-section">
+        <label>Professor Responsável</label>
+        <select [(ngModel)]="turma.professorId" (change)="alterarProfessor(turma)" class="select-professor">
+          <option [ngValue]="null">Selecione um professor...</option>
+          <option *ngFor="let prof of professores" [ngValue]="prof.id">
+            {{ prof.nome }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Lado Direito: Status e Ações -->
+      <div class="acoes-section">
+        <span 
+          class="status-badge" 
+          [ngClass]="turma.ativo ? 'status-ativa' : 'status-inativa'"
+          (click)="alternarStatus(turma)"
+          [title]="turma.ativo ? 'Desativar Turma' : 'Ativar Turma'">
+          {{ turma.ativo ? 'Ativa' : 'Inativa' }}
+        </span>
+
+        <button class="btn-delete" (click)="confirmarRemocao(turma)" title="Remover Turma">
+          <i class="far fa-trash-alt"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Feedback caso a busca não retorne nada -->
+    <div *ngIf="turmasFiltradas.length === 0" class="no-results">
+      <i class="fas fa-search"></i>
+      <p>Nenhuma turma encontrada com o nome "{{ filtro }}".</p>
+    </div>
+  </div>
+</div>

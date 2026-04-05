@@ -1,5 +1,5 @@
 <div class="container-fluid px-2 py-3 p-md-4 bg-dark text-white min-vh-100" *ngIf="response; else carregando">
-  
+
   <div *ngIf="mensagem" class="alert alert-{{tipoMensagem}} alert-floating shadow-lg">
     {{ mensagem }}
   </div>
@@ -8,19 +8,23 @@
     <button class="btn-voltar" (click)="voltar()">
       <i class="fas fa-arrow-left me-1"></i> Voltar para Alunos
     </button>
+
     <button class="btn btn-warning btn-sm rounded-pill fw-bold" (click)="abrirModalEdicao()">
       <i class="fas fa-user-edit me-1"></i> Editar Aluno
     </button>
+    <app-aluno-atualizar *ngIf="exibirModal && response" [alunoEdicao]="response" (aoFechar)="exibirModal = false"
+      (aoSalvar)="carregarDados(response.id!); exibirModal = false">
+    </app-aluno-atualizar>
   </div>
 
   <div class="card bg-card border-0 rounded-4 mb-4 p-4 shadow-sm">
     <div class="d-flex flex-column flex-md-row align-items-center gap-3 gap-md-4 text-center text-md-start">
       <div class="avatar-circle shadow color-name">{{ response.nome | slice:0:1 }}</div>
       <div class="flex-grow-1">
-        <h1 class="h3 fw-bold mb-1 color-name">{{ response?.nome }}</h1>
+        <h1 class="h3 fw-bold mb-1 color-name">{{ response.nome }}</h1>
         <p class="text-secondary mb-0 d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
-          <span>{{ response?.nomeTurma || 'Sem Turma' }}</span>
-             <span class="d-none d-md-inline">•</span>
+          <span>{{ response.nomeTurma || 'Sem Turma' }}</span>
+          <span class="d-none d-md-inline">•</span>
           <span> Idade: {{response.idade}}</span>
           <span class="d-none d-md-inline">•</span>
           <span>{{ response.telefone }}</span>
@@ -70,22 +74,19 @@
           <tr *ngFor="let m of mensalidades; trackBy: trackByMensalidadeId">
             <td class="fw-bold">{{ m?.mesReferencia }}</td>
             <td class="text-nowrap">R$ {{ m?.valor | number:'1.2-2' }}</td>
-            <td class="text-muted">{{ m?.dataVencimento | date:'dd/MM/yyyy' }}</td>
-            <td class="text-muted">{{ m?.dataPagamento ? (m?.dataPagamento | date:'dd/MM/yyyy') : '-' }}</td>
+            <td class="text-nowrap">{{ m.vencimento | date:'dd/MM/yyyy' }}</td>
+            <td class="text-nowrap">{{ m?.dataPagamento ? (m?.dataPagamento | date:'dd/MM/yyyy') : '-' }}</td>
             <td>
-              <span class="badge-status" [ngClass]="(m?.status?.toString() || '').toLowerCase()">
-                {{ m?.status }}
+              <span class="badge-status" [ngClass]="statusTraducao[m.status]?.toLowerCase()">
+                {{ statusTraducao[m.status] || m.status }}
               </span>
             </td>
             <td class="text-end px-3">
-              <button class="btn-success-custom" 
-                      *ngIf="m?.status !== 'Pago'"
-                      (click)="marcarPago(m.id)">
+              <button class="btn-success-custom" *ngIf="m?.status !== 'Pago'" (click)="marcarPago(m.id)">
                 Marcar Pago
               </button>
-              <button class="btn btn-sm btn-outline-secondary rounded-pill" 
-                      *ngIf="m?.status === 'Pago'"
-                      (click)="marcarPago(m.id)">
+              <button class="btn btn-sm btn-outline-secondary rounded-pill" *ngIf="m?.status === 'Pago'"
+                (click)="marcarPago(m.id)">
                 Desfazer
               </button>
             </td>
@@ -101,4 +102,3 @@
     <div class="spinner-border text-danger" role="status"></div>
   </div>
 </ng-template>
-
