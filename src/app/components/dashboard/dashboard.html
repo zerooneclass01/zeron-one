@@ -12,7 +12,7 @@
 </header>
 
   <main class="card-grid">
-    <div class="card-horizontal" routerLink="/chamada">
+    <div class="card-horizontal" (click)="irParaChama()">
       <div class="icon-box green">
         <i class="fas fa-book-open"></i>
       </div>
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="card-horizontal" routerLink="/financeiro">
+    <div class="card-horizontal"  (click)="irParaFinanceiro()">
       <div class="icon-box yellow">
         <i class="fas fa-dollar-sign"></i>
       </div>
@@ -42,7 +42,7 @@
       </div>
     </a>
 
-    <div class="card-horizontal" routerLink="/usuarios">
+    <div class="card-horizontal" (click)="irParaUsuario()">
       <div class="icon-box gray">
         <i class="fas fa-user-cog"></i>
       </div>
@@ -52,7 +52,7 @@
       </div>
     </div>
 
-    <div class="card-horizontal" routerLink="/Professor">
+    <div class="card-horizontal" (click)="irParaProfessor()" >
       <div class="icon-box blue">
         <i class="fas fa-chalkboard-teacher"></i>
       </div>
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="card-horizontal" routerLink="/turma">
+    <div class="card-horizontal" (click)="irParaTurma()">
       <div class="icon-box purple">
         <i class="fas fa-layer-group"></i>
       </div>

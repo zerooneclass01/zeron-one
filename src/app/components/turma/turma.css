@@ -194,3 +194,77 @@
 }
 
 .no-results i { font-size: 40px; margin-bottom: 10px; }
+
+/* --- RESPONSIVIDADE PARA MOBILE --- */
+
+@media (max-width: 768px) {
+  .gestao-container {
+    padding: 15px; /* Reduz o respiro lateral no celular */
+  }
+
+  .gestao-header {
+    flex-direction: column; /* Título em cima, botão embaixo */
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .btn-nova-turma {
+    width: 100%; /* Botão ocupa a largura toda no celular */
+    text-align: center;
+  }
+
+  /* Ajuste do Card */
+  .turma-item {
+    flex-direction: column; /* Empilha os blocos do card */
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .info-principal {
+    width: 100%;
+  }
+
+  /* Seção de Professor ocupa a largura toda */
+  .professor-section {
+    padding: 0;
+    width: 100%;
+    border-top: 1px solid #222;
+    padding-top: 15px;
+  }
+
+  .select-professor {
+    max-width: 100%; /* Select ocupa a largura toda */
+    width: 100%;
+  }
+
+  /* Seção de Ações (Status e Lixeira) */
+  .acoes-section {
+    width: 100%;
+    justify-content: space-between; /* Status na esquerda, lixeira na direita */
+    border-top: 1px solid #222;
+    padding-top: 15px;
+  }
+
+  .avatar-circle {
+    width: 45px;
+    height: 45px;
+    min-width: 45px; /* Garante que o círculo não amasse */
+    font-size: 18px;
+  }
+
+  .turma-nome {
+    font-size: 16px;
+  }
+}
+
+/* Ajustes extras para telas muito pequenas (iPhone SE, etc) */
+@media (max-width: 480px) {
+  .header-titles h1 {
+    font-size: 22px;
+  }
+  
+  .meta-dados {
+    font-size: 12px;
+  }
+}

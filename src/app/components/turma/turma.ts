@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -17,24 +17,25 @@ export class TurmaComponent implements OnInit {
   exibirModal = false;
   filtro: string = '';
   turmas: any[] = [];
-  turmasFiltradas: any[] = [];
+  turmasFiltradas: any[] = []; // O HTML deve iterar sobre esta lista
   professores: any[] = [];
+  carregando: boolean = false;
 
-  // Mapeamento para transformar o número Bitwise do banco em nomes de dias
   diasDaSemanaMap = [
-    { nome: 'Seg', valor: 1 },
-    { nome: 'Ter', valor: 2 },
-    { nome: 'Qua', valor: 4 },
-    { nome: 'Qui', valor: 8 },
-    { nome: 'Sex', valor: 16 },
-    { nome: 'Sáb', valor: 32 },
-    { nome: 'Dom', valor: 64 }
+    { nome: 'Seg', valor: 2 },
+    { nome: 'Ter', valor: 4 },
+    { nome: 'Qua', valor: 8 },
+    { nome: 'Qui', valor: 16 },
+    { nome: 'Sex', valor: 32 },
+    { nome: 'Sáb', valor: 64 },
+    { nome: 'Dom', valor: 1 }
   ];
 
   constructor(
     private turmaService: TurmaService,
     private professorService: ProfessorService,
-    private router: Router
+    private router: Router,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -42,85 +43,69 @@ export class TurmaComponent implements OnInit {
     this.carregarProfessores();
   }
 
-  // --- CONTROLE DO MODAL E ATUALIZAÇÃO ---
-
-  abrirModal() {
-    this.exibirModal = true;
-  }
-
-  fecharModal() {
-    this.exibirModal = false;
-  }
-
-  /**
-   * Chamado quando o componente filho emite o evento de sucesso.
-   * Fecha o modal e força um novo GET no servidor.
-   */
-  aoSalvarTurma() {
-    this.exibirModal = false;
-    // Delay de 300ms opcional para garantir que o banco persistiu o dado
-    setTimeout(() => {
-      this.carregarTurmas();
-    }, 300);
-  }
-
-  // --- CHAMADAS DE API (GET) ---
+  // --- BUSCA DE DADOS ---
 
   carregarTurmas() {
+    this.carregando = true;
     this.turmaService.obterTodas().subscribe({
       next: (data) => {
         this.turmas = data;
-        this.filtrarTurmas(); // Reaplica o filtro sobre a nova lista
+        // Faz a lista aparecer imediatamente ao carregar
+        this.filtrarTurmas(); 
+        this.carregando = false;
+        this.cdRef.detectChanges();
       },
-      error: (err) => console.error("Erro ao atualizar lista de turmas", err)
+      error: (err) => {
+        console.error("Erro ao carregar turmas", err);
+        this.carregando = false;
+      }
     });
   }
 
   carregarProfessores() {
-    this.professorService.obterTodos().subscribe(data => {
-      this.professores = data;
+    this.professorService.obterTodos().subscribe({
+      next: (data) => this.professores = data,
+      error: (err) => console.error("Erro ao carregar professores", err)
     });
   }
 
-  // --- AÇÕES DA LISTA ---
+  // --- LÓGICA DE FILTRO ---
 
-  irParaDetalhe(id: string) {
-    this.router.navigate(['/turma', id]);
+  filtrarTurmas() {
+    if (!this.filtro || this.filtro.trim() === '') {
+      this.turmasFiltradas = [...this.turmas];
+    } else {
+      const termo = this.filtro.toLowerCase();
+      this.turmasFiltradas = this.turmas.filter(t =>
+        t.nome.toLowerCase().includes(termo)
+      );
+    }
   }
 
-  formatarDias(valorBitwise: any): string {
-    // Converte para número caso venha como string da API
-    const valor = Number(valorBitwise);
-
-    if (!valor || valor === 0) return 'Horário flexível';
-
-    const selecionados = this.diasDaSemanaMap
-      .filter(dia => (valor & dia.valor) !== 0)
-      .map(dia => dia.nome);
-
-    return selecionados.length > 0 ? selecionados.join(', ') : 'Horário flexível';
-  }
+  // --- AÇÕES DA TABELA (Resolvendo os erros TS2339) ---
 
   alterarProfessor(turma: any) {
     this.turmaService.alterarProfessor(turma.id, turma.professorId).subscribe({
-      next: () => console.log('Professor vinculado com sucesso!'),
-      error: (err) => alert("Erro ao trocar professor")
+      next: () => console.log('Professor atualizado com sucesso!'),
+      error: () => alert("Erro ao vincular professor.")
     });
   }
 
   alternarStatus(turma: any) {
-    const acao$ = turma.ativo
-      ? this.turmaService.desativar(turma.id)
+    const acao$ = turma.ativo 
+      ? this.turmaService.desativar(turma.id) 
       : this.turmaService.ativar(turma.id);
 
     acao$.subscribe({
-      next: () => turma.ativo = !turma.ativo,
-      error: (err) => console.error("Erro no status", err)
+      next: () => {
+        turma.ativo = !turma.ativo;
+      },
+      error: () => alert("Erro ao alterar status da turma.")
     });
   }
 
   confirmarRemocao(turma: any) {
-    if (confirm(`Remover a turma ${turma.nome}?`)) {
+    if (confirm(`Deseja remover a turma ${turma.nome}?`)) {
       this.turmaService.remover(turma.id).subscribe({
         next: () => {
           this.turmas = this.turmas.filter(t => t.id !== turma.id);
@@ -130,9 +115,26 @@ export class TurmaComponent implements OnInit {
     }
   }
 
-  filtrarTurmas() {
-    this.turmasFiltradas = this.turmas.filter(t =>
-      t.nome.toLowerCase().includes(this.filtro.toLowerCase())
-    );
+  // --- AUXILIARES ---
+
+  formatarDias(valorBitwise: any): string {
+    const valor = Number(valorBitwise);
+    if (!valor || valor === 0) return 'Horário flexível';
+    const selecionados = this.diasDaSemanaMap
+      .filter(dia => (valor & dia.valor) === dia.valor)
+      .map(dia => dia.nome);
+    return selecionados.length > 0 ? selecionados.join(', ') : 'Horário flexível';
+  }
+
+  irParaDetalhe(id: string) {
+    this.router.navigate(['/turma/turma-detalhe', id]);
+  }
+
+  abrirModal() { this.exibirModal = true; }
+  fecharModal() { this.exibirModal = false; }
+  
+  aoSalvarTurma() {
+    this.exibirModal = false;
+    this.carregarTurmas();
   }
 }

@@ -1,0 +1,101 @@
+/* Overlay que escurece o fundo */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  padding: 20px;
+}
+
+.modal-container {
+  background: #1a1a1a;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  border: 1px solid #333;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-header h3 { color: #fff; margin: 0; font-size: 1.2rem; }
+.modal-header p { color: #888; margin: 5px 0 0; font-size: 0.85rem; }
+
+.btn-close {
+  background: none; border: none;
+  color: #888; font-size: 1.8rem;
+  cursor: pointer; line-height: 1;
+}
+
+.modal-body { padding: 20px; overflow: hidden; display: flex; flex-direction: column; }
+
+/* Busca */
+.search-container {
+  position: relative; margin-bottom: 20px;
+}
+.search-icon {
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%); color: #666;
+}
+.search-container input {
+  width: 100%; background: #2a2a2a;
+  border: 1px solid #444; border-radius: 8px;
+  padding: 12px 12px 12px 40px; color: #fff;
+  outline: none; transition: 0.2s;
+}
+.search-container input:focus { border-color: #ff3b3b; box-shadow: 0 0 5px rgba(255, 59, 59, 0.3); }
+
+/* Lista */
+.lista-alunos-scroll {
+  overflow-y: auto; flex-grow: 1;
+  padding-right: 5px; min-height: 200px;
+}
+
+.aluno-card {
+  display: flex; align-items: center;
+  padding: 12px; background: #222;
+  border-radius: 8px; margin-bottom: 10px;
+  cursor: pointer; transition: 0.2s;
+  border: 1px solid transparent;
+}
+.aluno-card:hover { background: #2d2d2d; border-color: #444; transform: translateX(5px); }
+
+.aluno-avatar {
+  width: 40px; height: 40px; background: #ff3b3b;
+  border-radius: 50%; display: flex;
+  justify-content: center; align-items: center;
+  font-weight: bold; color: white; margin-right: 15px;
+}
+
+.aluno-detalhes { flex-grow: 1; display: flex; flex-direction: column; }
+.aluno-nome { color: #eee; font-weight: 500; }
+.aluno-mat { color: #777; font-size: 0.8rem; }
+
+.aluno-action { color: #ff3b3b; font-size: 1.1rem; opacity: 0.6; }
+.aluno-card:hover .aluno-action { opacity: 1; }
+
+/* Footer */
+.modal-footer { padding: 15px 20px; border-top: 1px solid #333; text-align: right; }
+.btn-cancelar {
+  background: #333; color: white; border: none;
+  padding: 10px 20px; border-radius: 6px; cursor: pointer;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .modal-container { height: 100%; max-height: 100%; border-radius: 0; }
+}

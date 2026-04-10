@@ -1,0 +1,265 @@
+:host {
+  display: block;
+  background-color: #121212; /* Fundo Dark igual à imagem */
+  color: white;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-voltar {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-novo {
+  background-color: #d32f2f; /* Vermelho do botão da imagem */
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.title { font-size: 2.5rem; margin-top: 20px; margin-bottom: 5px; }
+.subtitle { color: #888; margin-bottom: 30px; }
+
+/* Busca */
+.search-container {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.search-input {
+  width: 100%;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  padding: 15px 15px 15px 45px;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+/* Card Estilo Listagem */
+.professor-card {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  transition: 0.2s;
+}
+
+.professor-card:hover { background-color: #252525; }
+
+.card-left { display: flex; align-items: center; gap: 15px; }
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  background-color: #d32f2f;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.info { display: flex; flex-direction: column; }
+.name { font-size: 1.1rem; font-weight: 500; }
+.details { font-size: 0.85rem; color: #777; margin-top: 4px; }
+
+.card-right { display: flex; align-items: center; gap: 20px; }
+
+.status-badge {
+  background-color: rgba(46, 125, 50, 0.2);
+  color: #4caf50;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid #2e7d32;
+}
+
+.price { font-size: 1.1rem; font-weight: 500; min-width: 100px; text-align: right; }
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.btn-icon.delete:hover { color: #ff5252; }
+
+/* Modal Overlay */
+.form-overlay {
+  position: fixed;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.form-card {
+  background: #252525;
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.form-card input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #121212;
+  border: 1px solid #333;
+  color: white;
+  border-radius: 8px;
+}
+
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+.btn-save { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+.btn-cancel { background: none; color: #888; border: none; cursor: pointer; }
+
+/* --- RESPONSIVIDADE --- */
+
+@media (max-width: 768px) {
+  :host {
+    padding: 20px 10px;
+  }
+
+  .top-bar {
+    flex-direction: column-reverse; /* Botão Novo fica em cima no mobile */
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .btn-voltar {
+    text-align: left;
+    padding: 0;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    margin-top: 15px;
+  }
+
+  /* Ajuste do Card para Mobile */
+  .professor-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    position: relative;
+  }
+
+  .card-right {
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .name {
+    font-size: 1rem;
+  }
+
+  .price {
+    text-align: left;
+    min-width: auto;
+  }
+
+  /* Ajuste do Modal no Celular */
+  .form-card {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
+/* Toque de acessibilidade para dedos no mobile */
+@media (max-width: 480px) {
+  .btn-novo {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .actions {
+    gap: 20px;
+  }
+
+  .btn-icon {
+    padding: 10px; /* Área de toque maior */
+  }
+}
+
+/* Estilo para o botão de editar que substituiu o 'Ativo' */
+.btn-edit-inline {
+  background-color: rgba(41, 128, 185, 0.1); /* Azul sutil de fundo */
+  color: #3498db;
+  border: 1px solid #2980b9;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-edit-inline:hover {
+  background-color: #2980b9;
+  color: white;
+}
+
+/* Ajuste na seção da direita para alinhar tudo */
+.card-right {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Aumentei o espaço entre o botão, o preço e a lixeira */
+}
+
+/* Responsividade para o novo botão no mobile */
+@media (max-width: 768px) {
+  .card-right {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+  }
+  
+  .btn-edit-inline {
+    padding: 8px 20px; /* Botão maior no celular para facilitar o toque */
+  }
+}

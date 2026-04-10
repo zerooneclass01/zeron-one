@@ -7,17 +7,20 @@ import { environment } from '../../environments/environment';
 export interface AdicionarAtualizarTurmaModel {
   nome: string;
   professorId?: string | null;
-
+  // ADICIONE ESTAS DUAS LINHAS:
+  horario?: string;      
+  diasDaSemana?: number; 
 }
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class TurmaService {
   // A rota base conforme o [Route("api/[controller]")]
-  private apiUrl = `${environment.apiUrl}/Turma`; 
+  private apiUrl = `${environment.apiUrl}/Turma`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // GET: api/Turma/ObterTodos
   obterTodas(): Observable<any[]> {
@@ -27,6 +30,10 @@ export class TurmaService {
   // GET: api/Turma/{id}
   obterPorId(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  obterAlunosDaTurma(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ObterAlunosDaTurma/${id}`);
   }
 
   // POST: api/Turma (Criação)
@@ -59,4 +66,10 @@ export class TurmaService {
   remover(id: string): Observable<string> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
   }
+
+  //api/Turma/removerAluno/{Alunoid}/{turmaId}
+  removerAlunoDaTurma(alunoId: string, turmaId: string): Observable<string> {
+    return this.http.delete(`${this.apiUrl}/removerAluno/${alunoId}/${turmaId}`, { responseType: 'text' });
+  }
+
 }

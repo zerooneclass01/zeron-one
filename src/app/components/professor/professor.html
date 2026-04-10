@@ -1,1 +1,69 @@
-<p>professor works!</p>
+<div class="container">
+  <div class="top-bar">
+    <button class="btn-voltar" (click)="voltar()">
+      <i class="fas fa-arrow-left"></i> Voltar
+    </button>
+    <button class="btn-novo" (click)="abrirFormulario()">
+      <i class="fas fa-user-plus"></i> Novo Professor
+    </button>
+  </div>
+
+  <h1 class="title">Professores</h1>
+  <p class="subtitle">Gerencie os professores e seus salários</p>
+
+  <div class="search-container">
+    <i class="fas fa-search search-icon"></i>
+    <input type="text" [(ngModel)]="filtro" placeholder="Buscar professor..." class="search-input">
+  </div>
+
+  <div class="list-container">
+    <div class="professor-card" *ngFor="let prof of listaFiltrada">
+      <div class="card-left">
+        <div class="avatar">{{ prof.nome ? prof.nome.charAt(0).toUpperCase() : '?' }}</div>
+        <div class="info">
+          <span class="name">{{ prof.nome }}</span>
+          <span class="details">ID: {{ prof.id ? prof.id.substring(0, 8) : '...' }} • Docente</span>
+        </div>
+      </div>
+
+      <div class="card-right">
+        <button class="btn-edit-inline" (click)="prepararEdicao(prof)">
+          Editar
+        </button>
+
+        <span class="price">{{ prof.salario | currency:'BRL' }}</span>
+
+        <div class="actions">
+          <button class="btn-icon delete" (click)="remover(prof.id)" title="Remover">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-list" *ngIf="listaFiltrada.length === 0">
+      <p>Nenhum professor encontrado com o nome "{{ filtro }}".</p>
+    </div>
+  </div>
+
+  <div class="form-overlay" *ngIf="exibirFormulario">
+    <div class="form-card">
+      <h3>{{ professorSelecionado.id === '00000000-0000-0000-0000-000000000000' ? 'Novo' : 'Editar' }} Professor</h3>
+
+      <div class="input-group">
+        <label>Nome do Professor</label>
+        <input type="text" [(ngModel)]="professorSelecionado.nome" placeholder="Digite o nome completo">
+      </div>
+
+      <div class="input-group">
+        <label>Salário (R$)</label>
+        <input type="number" step="0.01" [(ngModel)]="professorSelecionado.salario" placeholder="0,00">
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="exibirFormulario = false">Cancelar</button>
+        <button class="btn-save" (click)="salvar()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>

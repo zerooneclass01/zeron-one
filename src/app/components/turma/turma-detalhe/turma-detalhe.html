@@ -1,0 +1,118 @@
+<div class="gestao-container">
+  <!-- HEADER CORRIGIDO: Voltar no topo, Título abaixo, Botões à direita -->
+  <header class="gestao-header">
+    <div class="header-left-side">
+      <a routerLink="/turma" class="back-link">
+        <i class="fas fa-arrow-left"></i> Voltar
+      </a>
+      <div class="header-titles">
+        <div class="titulo-com-badge" *ngIf="turma">
+          <h1>Detalhes da Turma: {{ turma.nome }}</h1>
+          <span class="status-badge status-ativa">Ativa</span>
+        </div>
+        <p>Visualize as informações e gerencie os alunos matriculados</p>
+      </div>
+    </div>
+
+    <div class="acoes-header-detalhe">
+      <button class="btn-acao-outline" (click)="abrirModalEdicao()">
+        <i class="fas fa-edit"></i> Editar
+      </button>
+      <button class="btn-acao-principal" (click)="vincularNovoAluno()">
+        + Vincular Aluno
+      </button>
+    </div>
+  </header>
+
+  <app-turma-edicao *ngIf="exibirModalEdicao" [turmaOriginal]="turma" [professores]="listaProfessores"
+    (aoFechar)="exibirModalEdicao = false" (aoSalvar)="onTurmaAtualizada($event)">
+  </app-turma-edicao>
+
+  <app-turma-vincular-aluno *ngIf="exibirModalAlunos" [turma]="turma" (fechar)="exibirModalAlunos = false"
+    (alunoVinculado)="onAlunoVinculado($event)">
+  </app-turma-vincular-aluno>
+
+  <!-- LOADING STATE -->
+  <div *ngIf="carregando" class="loading-container">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Carregando dados da turma...</p>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main *ngIf="!carregando && turma" class="detalhe-content">
+
+    <!-- CARD DE INFORMAÇÕES DA TURMA -->
+    <section class="info-card-container">
+      <div class="info-principal-fixed">
+        <div class="avatar-circle">{{ turma.nome.charAt(0) }}</div>
+        <div class="texto-info">
+          <h3 class="turma-titulo">{{ turma.nome }}</h3>
+          <div class="meta-dados-detalhe">
+            <span class="horario-nivel">
+              <i class="far fa-clock"></i> {{ turma.horario }} | {{ turma.nivel }}
+            </span>
+            <span class="dias-badge">
+              <i class="far fa-calendar-alt"></i> {{ formatarDias(turma.diasDaAula) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="professor-vinculo-fixed">
+        <label>Professor Responsável:</label>
+        <p class="nome-professor-fixed">{{ turma.professorNome || 'Não atribuído' }}</p>
+      </div>
+
+      <div class="acoes-card-detalhe">
+        <button class="btn-delete-icon" (click)="confirmarRemocaoTurma()" title="Remover Turma">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE ALUNOS -->
+    <section class="alunos-section">
+      <div class="alunos-header">
+        <h2>Alunos Matriculados <span>({{ turma.alunos?.length || 0 }})</span></h2>
+      </div>
+
+      <div class="tabela-wrapper-dark">
+        <table class="tabela-dark">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Matrícula</th>
+              <th class="txt-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let aluno of turma.alunos">
+              <td data-label="Nome">
+                <div class="aluno-identidade">
+                  <div class="mini-avatar">{{ aluno.nome.charAt(0) }}</div>
+                  <span>{{ aluno.nome }}</span>
+                </div>
+              </td>
+              <td data-label="Matrícula" class="col-matricula">
+                {{ aluno.matricula }}
+              </td>
+              <td data-label="Ações" class="txt-center">
+                <button class="btn-delete-icon btn-tabela" (click)="removerAluno(aluno.id, aluno.nome)">
+                  <i class="far fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- EMPTY STATE -->
+            <tr *ngIf="!turma.alunos || turma.alunos.length === 0">
+              <td colspan="3" class="empty-state">
+                <i class="fas fa-users-slash"></i>
+                <p>Esta turma ainda não possui alunos vinculados.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

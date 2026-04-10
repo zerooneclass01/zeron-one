@@ -1,0 +1,55 @@
+<div class="modal-overlay" (click)="fecharModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    
+    <header class="modal-header">
+      <div class="header-content">
+        <h3>Vincular Aluno - {{ turma?.nome }}</h3>
+        <p>Clique em um aluno para adicioná-lo à turma</p>
+      </div>
+      <button class="btn-close" (click)="fecharModal()">&times;</button>
+    </header>
+
+    <div class="modal-body">
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          placeholder="Pesquisar por nome ou matrícula..." 
+          [(ngModel)]="filtro"
+          (input)="filtrar()">
+      </div>
+
+      <div class="lista-alunos-scroll">
+        <div *ngIf="carregando" class="loading-state">
+          <div class="spinner"></div>
+          <span>Buscando alunos disponíveis...</span>
+        </div>
+
+        <div *ngIf="!carregando && alunosFiltrados.length === 0" class="empty-state">
+          <i class="fas fa-user-slash"></i>
+          <p>Nenhum aluno disponível para vínculo.</p>
+        </div>
+
+        <div 
+          class="aluno-card" 
+          *ngFor="let aluno of alunosFiltrados" 
+          (click)="vincular(aluno)">
+          <div class="aluno-avatar">
+            {{ aluno.nome.charAt(0).toUpperCase() }}
+          </div>
+          <div class="aluno-detalhes">
+            <span class="aluno-nome">{{ aluno.nome }}</span>
+            <span class="aluno-mat">Matrícula: {{ aluno.matricula }}</span>
+          </div>
+          <div class="aluno-action">
+            <i class="fas fa-plus"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="modal-footer">
+      <button class="btn-cancelar" (click)="fecharModal()">Concluir</button>
+    </footer>
+  </div>
+</div>

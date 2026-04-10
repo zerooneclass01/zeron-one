@@ -1,0 +1,71 @@
+<div class="modal-overlay" (click)="aoFechar.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <div class="header-title-group">
+        <div class="mini-avatar">{{ turma.nome?.charAt(0) }}</div>
+        <h2>Editar Turma: {{ turma.nome }}</h2>
+      </div>
+      <button class="btn-close" (click)="aoFechar.emit()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label [style.color]="!turma.nome ? '#888' : '#fff'">Nome da Turma *</label>
+        <input 
+          type="text" 
+          [(ngModel)]="turma.nome" 
+          placeholder="Ex: Muay Thai Noite"
+          [style.border-color]="!turma.nome ? '#444' : '#28a745'">
+      </div>
+
+      <div class="form-group">
+        <label>Horário da Aula</label>
+        <input 
+          type="time" 
+          [(ngModel)]="turma.horario"
+          [style.border-color]="'#28a745'">
+      </div>
+
+      <div class="form-group">
+        <label [style.color]="turma.diasDaSemana === 0 ? '#e50914' : '#28a745'">
+          Dias da Semana * {{ turma.diasDaSemana === 0 ? '(Selecione ao menos um)' : '✓' }}
+        </label>
+        <div class="dias-container">
+          <div *ngFor="let dia of diasOpcoes" 
+               class="dia-chip" 
+               [class.active]="diasSelecionados[dia.valor]"
+               (click)="selecionarDia(dia.valor)">
+            {{ dia.nome }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label [style.color]="!turma.professorId ? '#e50914' : '#28a745'">
+          Professor Responsável *
+        </label>
+        <select 
+          [(ngModel)]="turma.professorId"
+          [style.border-color]="!turma.professorId ? '#e50914' : '#28a745'">
+          <option [ngValue]="null" disabled>Selecione um professor...</option>
+          <option *ngFor="let prof of professores" [ngValue]="prof.id">
+            {{ prof.nome }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="aoFechar.emit()">Cancelar</button>
+      
+      <button 
+        class="btn-save" 
+        (click)="salvar()" 
+        [disabled]="!turma.nome || !turma.professorId || turma.diasDaSemana === 0">
+        <i class="fas fa-save"></i> Salvar Alterações
+      </button>
+    </div>
+
+  </div>
+</div>
