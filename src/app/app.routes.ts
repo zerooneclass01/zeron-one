@@ -10,6 +10,7 @@ import { Financeiro } from './components/financeiro/financeiro';
 import { Usuario } from './components/usuario/usuario';
 import { TurmaDetalheComponent } from './components/turma/turma-detalhe/turma-detalhe';
 import { ChamadaComponent } from './components/chamadas/chamadas';
+import { RelatorioChamada } from './components/chamadas/relatorio-chamada/relatorio-chamada'
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -26,8 +27,9 @@ export const routes: Routes = [
   { path: 'professor', component: ProfessorComponent },
   { path: 'financeiro', component: Financeiro },
   { path: 'usuario', component: Usuario },
-  { path: 'chamadas', component: ChamadaComponent },
 
+  { path: 'chamadas', component: ChamadaComponent },
+  { path:'relatorio-chamada/:id', component: RelatorioChamada },
 
   { path: '**', redirectTo: 'dashboard' }
 ];

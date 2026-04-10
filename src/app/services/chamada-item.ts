@@ -12,7 +12,7 @@ export interface PresencaIndividualModel {
   providedIn: 'root'
 })
 export class ChamadaItemService {
-  private readonly apiUrl = `${environment.apiUrl}/api/ChamadaItem`;
+  private readonly apiUrl = `${environment.apiUrl}/ChamadaItem`;
 
   constructor(private http: HttpClient) { }
 

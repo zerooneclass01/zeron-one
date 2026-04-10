@@ -1,0 +1,66 @@
+<div class="relatorio-body">
+  <div class="top-nav">
+    <button class="btn-voltar" (click)="voltar()">
+      <i class="fas fa-chevron-left"></i> Voltar
+    </button>
+    <span class="label-header">Módulo de Frequência</span>
+  </div>
+
+  <div class="content" *ngIf="relatorio">
+    <h1 class="turma-titulo">{{ relatorio.turmaNome }}</h1>
+    
+    <div class="aluno-container" *ngFor="let aluno of relatorio.alunos">
+      
+      <div class="aluno-header">
+        <div class="info-principal">
+          <div class="avatar">{{ aluno.nome.charAt(0) }}</div>
+          <div>
+            <h3>{{ aluno.nome }}</h3>
+            <span class="porcentagem" [class.danger]="aluno.frequencia < 75">
+              {{ aluno.frequencia | number:'1.0-0' }}% de Frequência
+            </span>
+          </div>
+        </div>
+        <div class="resumo-stats">
+          <div class="stat-item">
+            <small>PRESENÇAS</small>
+            <span class="text-green">{{ aluno.totalPresencas }}</span>
+          </div>
+          <div class="stat-item">
+            <small>FALTAS</small>
+            <span class="text-red">{{ aluno.totalFaltas }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalhes-grid">
+        
+        <div class="secao-dias">
+          <h4><i class="fas fa-calendar-check"></i> Dias Presente</h4>
+          <div class="badges-lista">
+            <ng-container *ngFor="let dia of aluno.presencasDetalhes">
+              <span class="badge p" *ngIf="dia.presente">
+                {{ dia.data | date:'dd/MM' }}
+              </span>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="secao-dias">
+          <h4><i class="fas fa-calendar-times"></i> Histórico de Faltas</h4>
+          <div class="lista-faltas">
+            <ng-container *ngFor="let dia of aluno.presencasDetalhes">
+              <div class="item-falta" *ngIf="!dia.presente">
+                <span class="data-falta">{{ dia.data | date:'dd/MM' }}</span>
+                <span class="justificativa-txt">
+                  {{ dia.justificativa }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

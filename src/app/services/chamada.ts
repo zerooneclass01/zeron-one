@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
+import { RelatorioTurma } from '../models/RelatorioTurma';
 // Interfaces baseadas nos seus Models C#
 export interface AlunoPresencaModel {
   alunoId: string;
@@ -20,7 +20,7 @@ export interface AdicionarChamadaModel {
   providedIn: 'root'
 })
 export class ChamadaService {
-  private readonly apiUrl = `${environment.apiUrl}/api/Chamada`;
+  private readonly apiUrl = `${environment.apiUrl}/Chamada`;
 
   constructor(private http: HttpClient) { }
 
@@ -42,5 +42,10 @@ export class ChamadaService {
   // PATCH: api/Chamada/{id}/presencas
   alterarPresencasEmLote(id: string, alunos: AlunoPresencaModel[]): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/presencas`, alunos);
+  }
+
+  obterRelatorioPorTurma(turmaId: string): Observable<RelatorioTurma> {
+    // ADICIONADO O "/turma/" NA URL
+    return this.http.get<RelatorioTurma>(`${this.apiUrl}/relatorio/turma/${turmaId}`);
   }
 }

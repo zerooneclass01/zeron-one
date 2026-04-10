@@ -1,66 +1,102 @@
-<div class="container">
-  <div class="top-bar">
-    <button class="btn-voltar" (click)="voltar()">
+<div class="chamada-body">
+  <div class="top-nav">
+    <button class="link-voltar" (click)="voltar()">
       <i class="fas fa-arrow-left"></i> Voltar
     </button>
-    <h1 class="title">Chamada</h1>
+
+   <button class="btn-ir-relatorio" (click)="irParaRelatorio()" *ngIf="idTurmaSelecionada">
+    <i class="fas fa-chart-bar"></i> Relatório da Turma
+  </button>
   </div>
 
-  <div class="header-controls">
-    <div class="input-group">
-      <label><i class="fas fa-users"></i> Selecione a Turma</label>
-      <select [(ngModel)]="idTurmaSelecionada" (change)="onTurmaChange()" class="select-input">
-        <option value="" disabled selected>Escolha uma turma...</option>
-        <option *ngFor="let turma of turmas" [value]="turma.id">{{ turma.nome }}</option>
-      </select>
-    </div>
+  <h1 class="page-title">Chamada</h1>
+  <p class="page-subtitle">Registre a presença dos alunos</p>
 
-    <div class="input-group">
-      <label><i class="fas fa-calendar-alt"></i> Data da Aula</label>
-      <input type="date" [(ngModel)]="dataAula" class="date-input">
+  <div class="selection-card">
+    <div class="input-header">
+      <i class="fas fa-users icon-red"></i>
+      <label>Selecione a Turma</label>
     </div>
+    <select [(ngModel)]="idTurmaSelecionada" (change)="onTurmaChange()" class="dark-select">
+      <option value="" disabled selected>Escolha uma turma...</option>
+      <option *ngFor="let turma of turmas" [value]="turma.id">{{ turma.nome }}</option>
+    </select>
   </div>
 
-  <div class="list-container" *ngIf="alunos.length > 0; else noAlunos">
-    <div class="aluno-card" *ngFor="let aluno of alunos">
-      <div class="aluno-main">
-        <div class="aluno-info">
-          <div class="avatar">{{ aluno.nome ? aluno.nome.charAt(0).toUpperCase() : '?' }}</div>
-          <div class="name-box">
-            <span class="name">{{ aluno.nome }}</span>
-            <small class="obs-preview">{{ aluno.observacao }}</small>
-          </div>
+  <div class="date-card">
+    <div class="date-info">
+      <i class="far fa-calendar-alt icon-red large-icon"></i>
+      <div class="date-text">
+        <label>Data da Aula</label>
+        <span>{{ dataAula | date:'dd \'de\' MMMM \'de\' yyyy' : '' : 'pt-BR' }}</span>
+      </div>
+    </div>
+    
+    <input 
+      type="date" 
+      #dateInput 
+      [(ngModel)]="dataAula" 
+      (change)="onDataChange()" 
+      style="position: absolute; opacity: 0; width: 1px; height: 1px; z-index: -1;">
+
+    <button class="btn-change-date" (click)="dateInput.showPicker()">
+      Alterar Data
+    </button>
+  </div>
+
+  <div class="alunos-section" *ngIf="alunos.length > 0">
+    <div class="instruction-row">
+      <i class="fas fa-comment-dots icon-yellow"></i>
+      <p>Toque no ícone de balão para adicionar observações</p>
+    </div>
+    
+    <div class="aluno-row-card-container" *ngFor="let aluno of alunos">
+      
+      <div class="aluno-row-card">
+        <div class="aluno-profile">
+          <div class="avatar-circle">{{ aluno.nome.charAt(0).toUpperCase() }}</div>
+          <span class="aluno-full-name">{{ aluno.nome }}</span>
         </div>
 
-        <div class="aluno-actions">
-          <button class="btn-icon-obs" (click)="toggleObservacao(aluno)" [class.has-custom-obs]="aluno.exibirObs">
-            <i class="fas fa-comment-alt"></i>
+        <div class="aluno-controls">
+          <button 
+            class="btn-icon-comment" 
+            [class.has-obs]="aluno.observacao && aluno.observacao !== 'aluno presente' && aluno.observacao !== 'aluno não veio aula'" 
+            [class.active-obs]="aluno.exibirObs"
+            (click)="toggleObservacao(aluno)">
+            <i class="far fa-comment"></i>
           </button>
 
-          <div class="presence-toggle">
-            <button class="btn-p" [class.active]="aluno.presente" (click)="setPresenca(aluno, true)">P</button>
-            <button class="btn-f" [class.active]="!aluno.presente" (click)="setPresenca(aluno, false)">F</button>
+          <div class="presence-group">
+            <button 
+              class="btn-presence-p" 
+              [class.active]="aluno.presente" 
+              (click)="setPresenca(aluno, true)">P</button>
+            <button 
+              class="btn-presence-f" 
+              [class.active]="!aluno.presente" 
+              (click)="setPresenca(aluno, false)">F</button>
           </div>
         </div>
       </div>
 
-      <div class="obs-expand" *ngIf="aluno.exibirObs">
+      <div class="obs-expand-area" *ngIf="aluno.exibirObs">
         <textarea 
           [(ngModel)]="aluno.observacao" 
-          placeholder="Digite a justificativa ou observação..." 
-          class="obs-textarea">
+          placeholder="Digite a justificativa ou observação..."
+          class="dark-textarea"
+          rows="3">
         </textarea>
       </div>
     </div>
 
-    <button class="btn-save-full" (click)="salvarChamada()" [disabled]="carregando">
-      <i class="fas fa-check-circle"></i> {{ carregando ? 'Salvando...' : 'Salvar Chamada' }}
-    </button>
-  </div>
-
-  <ng-template #noAlunos>
-    <div class="empty-state" *ngIf="idTurmaSelecionada">
-      <i class="fas fa-user-slash"></i>
-      <p>Nenhum aluno matriculado nesta turma.</p>
+    <div class="footer-actions">
+      <button class="btn-save-final" (click)="salvarChamada()" [disabled]="carregando">
+        <span *ngIf="!carregando">
+          {{ isDataRetroativa ? 'Salvar Justificativas' : 'Salvar Chamada' }}
+        </span>
+        <span *ngIf="carregando">Processando...</span>
+      </button>
     </div>
-  </ng-template>
+  </div>
+</div>

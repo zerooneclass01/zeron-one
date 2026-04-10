@@ -1,0 +1,74 @@
+.relatorio-body {
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.btn-voltar { background: none; border: none; color: #f32133; font-weight: bold; cursor: pointer; font-size: 1rem; }
+.label-header { color: #333; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; }
+
+.turma-titulo { font-size: 2.5rem; font-weight: 900; margin-bottom: 2rem; }
+
+.aluno-container {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.aluno-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-principal { display: flex; align-items: center; gap: 1rem; }
+.avatar { 
+  width: 45px; height: 45px; background: #222; border-radius: 50%; 
+  display: flex; align-items: center; justify-content: center; 
+  font-weight: bold; color: #f32133; border: 1px solid #333;
+}
+
+.porcentagem { font-size: 0.85rem; font-weight: bold; color: #2ecc71; }
+.porcentagem.danger { color: #f32133; }
+
+.resumo-stats { display: flex; gap: 2rem; text-align: center; }
+.stat-item small { display: block; font-size: 0.6rem; color: #444; font-weight: bold; }
+.text-green { color: #2ecc71; font-size: 1.2rem; font-weight: 900; }
+.text-red { color: #f32133; font-size: 1.2rem; font-weight: 900; }
+
+/* Grid de Detalhes */
+.detalhes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+h4 { font-size: 0.8rem; color: #555; text-transform: uppercase; margin-bottom: 1rem; display: flex; gap: 8px; }
+
+.badges-lista { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge {
+  padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;
+  background: #111; color: #2ecc71; border: 1px solid #1a1a1a;
+}
+
+.item-falta {
+  background: rgba(243, 33, 51, 0.05);
+  border-left: 3px solid #f32133;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.data-falta { font-weight: bold; color: #fff; font-size: 0.8rem; }
+.justificativa-txt { font-size: 0.75rem; color: #f1c40f; font-style: italic; }
+
+@media (max-width: 768px) {
+  .detalhes-grid { grid-template-columns: 1fr; }
+  .aluno-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+}

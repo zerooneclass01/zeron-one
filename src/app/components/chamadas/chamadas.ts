@@ -1,8 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
 import { TurmaService } from '../../services/turma';
-import { ChamadaService, AdicionarChamadaModel, AlunoPresencaModel } from '../../services/chamada';
+import { ChamadaService, AdicionarChamadaModel } from '../../services/chamada';
+import { ChamadaItemService } from '../../services/chamada-item';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { routes } from '../../app.routes';
+
+registerLocaleData(localePt);
 
 @Component({
   selector: 'app-chamada',
@@ -15,27 +21,56 @@ export class ChamadaComponent implements OnInit {
   // Listas e Controles
   turmas: any[] = [];
   alunos: any[] = [];
-  
+
   // Modelos de Vinculação
   idTurmaSelecionada: string = '';
-  dataAula: string = new Date().toISOString().split('T')[0]; // Data atual padrão
-  
+  dataAula: string = new Date().toISOString().split('T')[0];
+
   // Estados da UI
   carregando: boolean = false;
+  isDataRetroativa: boolean = false;
 
   constructor(
     private turmaService: TurmaService,
     private chamadaService: ChamadaService,
-    private cdRef: ChangeDetectorRef
-  ) {}
+    private chamadaItemService: ChamadaItemService,
+    private cdRef: ChangeDetectorRef,
+    private router: Router, // INJETADO AQUI
+    private route: ActivatedRoute
+
+  ) { }
 
   ngOnInit() {
     this.carregarTurmas();
+    this.validarData();
   }
 
   /**
-   * Busca as turmas disponíveis para o dropdown
+   * Executado quando o input de data invisível sofre alteração
    */
+  onDataChange() {
+    this.validarData();
+    // Se já tiver uma turma selecionada, recarrega a lista para a nova data
+    if (this.idTurmaSelecionada) {
+      this.onTurmaChange();
+    }
+    this.cdRef.detectChanges();
+  }
+
+  /**
+   * Compara a data da aula com o dia de hoje
+   */
+  validarData() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    // Criamos a data a partir do string do input (AAAA-MM-DD)
+    const [ano, mes, dia] = this.dataAula.split('-').map(Number);
+    const dataSelecionada = new Date(ano, mes - 1, dia);
+
+    this.isDataRetroativa = dataSelecionada.getTime() < hoje.getTime();
+  }
+
   carregarTurmas() {
     this.turmaService.obterTodas().subscribe({
       next: (res) => {
@@ -46,22 +81,17 @@ export class ChamadaComponent implements OnInit {
     });
   }
 
-  /**
-   * Executado quando o professor seleciona uma turma
-   * Busca os alunos vinculados e já aplica a regra inicial de presença
-   */
   onTurmaChange() {
     if (!this.idTurmaSelecionada) return;
-    
+
     this.carregando = true;
     this.turmaService.obterAlunosDaTurma(this.idTurmaSelecionada).subscribe({
       next: (res) => {
-        // Mapeia os alunos adicionando as propriedades de controle da tela
         this.alunos = res.map((a: any) => ({
           ...a,
-          presente: true, // Todos começam com presença
-          observacao: 'aluno presente', // Regra automática solicitada
-          exibirObs: false // Controle do colapso da justificativa
+          presente: true,
+          observacao: 'aluno presente',
+          exibirObs: false
         }));
         this.carregando = false;
         this.cdRef.detectChanges();
@@ -73,28 +103,19 @@ export class ChamadaComponent implements OnInit {
     });
   }
 
-  /**
-   * Define a presença e aplica a regra de observação automática
-   */
   setPresenca(aluno: any, status: boolean) {
     aluno.presente = status;
-    
-    // Regra: se presente "aluno presente", se falta "aluno não veio aula"
     aluno.observacao = status ? 'aluno presente' : 'aluno não veio aula';
-    
     this.cdRef.detectChanges();
   }
 
-  /**
-   * Alterna a exibição do campo de texto para justificativa manual
-   */
   toggleObservacao(aluno: any) {
     aluno.exibirObs = !aluno.exibirObs;
     this.cdRef.detectChanges();
   }
 
   /**
-   * Envia os dados para o Backend (ChamadaController)
+   * Lógica Principal de Salvamento
    */
   salvarChamada() {
     if (!this.idTurmaSelecionada) {
@@ -102,38 +123,68 @@ export class ChamadaComponent implements OnInit {
       return;
     }
 
-    if (this.alunos.length === 0) {
-      alert("Não há alunos nesta turma para registrar presença.");
-      return;
+    if (this.isDataRetroativa) {
+      this.salvarJustificativasRetroativas();
+    } else {
+      this.executarRegistroChamadaNormal();
     }
+  }
 
+  private executarRegistroChamadaNormal() {
     this.carregando = true;
-
-    // Monta o payload exatamente como o seu AdicionarChamadaModel espera
     const payload: AdicionarChamadaModel = {
       turmaId: this.idTurmaSelecionada,
       dataAula: this.dataAula,
       alunos: this.alunos.map(a => ({
         alunoId: a.id,
         presente: a.presente,
-        observacao: a.observacao // Envia a automática ou a manual se o prof editou
+        observacao: a.observacao
       }))
     };
 
     this.chamadaService.registrar(payload).subscribe({
       next: (res) => {
         this.carregando = false;
-        alert(res.message || "Chamada registrada com sucesso!");
-        // Opcional: limpar a tela ou redirecionar
+        alert("Chamada de hoje registrada com sucesso!");
       },
       error: (err) => {
         this.carregando = false;
-        const msg = err.error?.message || "Erro ao salvar a chamada.";
-        alert("Erro: " + msg);
+        alert("Erro ao registrar: " + (err.error?.message || "Erro de conexão"));
       }
     });
   }
 
+  private salvarJustificativasRetroativas() {
+    this.carregando = true;
+
+    // Mapeia as atualizações individuais para o serviço de itens
+    const promises = this.alunos.map(a =>
+      this.chamadaItemService.atualizarPresencaIndividual(a.id, {
+        presente: a.presente,
+        observacao: a.observacao
+      }).toPromise()
+    );
+
+    Promise.all(promises)
+      .then(() => {
+        this.carregando = false;
+        alert("Justificativas atualizadas com sucesso!");
+      })
+      .catch((err) => {
+        this.carregando = false;
+        console.error(err);
+        alert("Erro ao atualizar algumas justificativas.");
+      });
+  }
+
+  irParaRelatorio() {
+    if (!this.idTurmaSelecionada) {
+      alert("Selecione uma turma para ver o relatório.");
+      return;
+    }
+    // Navega para a rota do relatório passando o ID da turma selecionada
+this.router.navigate(['/relatorio-chamada', this.idTurmaSelecionada]);
+  }
   voltar() {
     window.history.back();
   }
