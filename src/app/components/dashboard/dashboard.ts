@@ -31,8 +31,8 @@ export class Dashboard {
     this.router.navigate(['/turma'])
   }
 
-  irParaChama(){
-    this.router.navigate(['/chamada'])
+  irParaChamadas(){
+    this.router.navigate(['/chamadas'])
   }
 
 }

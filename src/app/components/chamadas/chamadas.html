@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="top-bar">
+    <button class="btn-voltar" (click)="voltar()">
+      <i class="fas fa-arrow-left"></i> Voltar
+    </button>
+    <h1 class="title">Chamada</h1>
+  </div>
+
+  <div class="header-controls">
+    <div class="input-group">
+      <label><i class="fas fa-users"></i> Selecione a Turma</label>
+      <select [(ngModel)]="idTurmaSelecionada" (change)="onTurmaChange()" class="select-input">
+        <option value="" disabled selected>Escolha uma turma...</option>
+        <option *ngFor="let turma of turmas" [value]="turma.id">{{ turma.nome }}</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label><i class="fas fa-calendar-alt"></i> Data da Aula</label>
+      <input type="date" [(ngModel)]="dataAula" class="date-input">
+    </div>
+  </div>
+
+  <div class="list-container" *ngIf="alunos.length > 0; else noAlunos">
+    <div class="aluno-card" *ngFor="let aluno of alunos">
+      <div class="aluno-main">
+        <div class="aluno-info">
+          <div class="avatar">{{ aluno.nome ? aluno.nome.charAt(0).toUpperCase() : '?' }}</div>
+          <div class="name-box">
+            <span class="name">{{ aluno.nome }}</span>
+            <small class="obs-preview">{{ aluno.observacao }}</small>
+          </div>
+        </div>
+
+        <div class="aluno-actions">
+          <button class="btn-icon-obs" (click)="toggleObservacao(aluno)" [class.has-custom-obs]="aluno.exibirObs">
+            <i class="fas fa-comment-alt"></i>
+          </button>
+
+          <div class="presence-toggle">
+            <button class="btn-p" [class.active]="aluno.presente" (click)="setPresenca(aluno, true)">P</button>
+            <button class="btn-f" [class.active]="!aluno.presente" (click)="setPresenca(aluno, false)">F</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="obs-expand" *ngIf="aluno.exibirObs">
+        <textarea 
+          [(ngModel)]="aluno.observacao" 
+          placeholder="Digite a justificativa ou observação..." 
+          class="obs-textarea">
+        </textarea>
+      </div>
+    </div>
+
+    <button class="btn-save-full" (click)="salvarChamada()" [disabled]="carregando">
+      <i class="fas fa-check-circle"></i> {{ carregando ? 'Salvando...' : 'Salvar Chamada' }}
+    </button>
+  </div>
+
+  <ng-template #noAlunos>
+    <div class="empty-state" *ngIf="idTurmaSelecionada">
+      <i class="fas fa-user-slash"></i>
+      <p>Nenhum aluno matriculado nesta turma.</p>
+    </div>
+  </ng-template>
