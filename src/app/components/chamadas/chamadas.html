@@ -4,9 +4,9 @@
       <i class="fas fa-arrow-left"></i> Voltar
     </button>
 
-   <button class="btn-ir-relatorio" (click)="irParaRelatorio()" *ngIf="idTurmaSelecionada">
-    <i class="fas fa-chart-bar"></i> Relatório da Turma
-  </button>
+    <button class="btn-ir-relatorio" (click)="irParaRelatorio()" *ngIf="idTurmaSelecionada">
+      <i class="fas fa-chart-bar"></i> Relatório da Turma
+    </button>
   </div>
 
   <h1 class="page-title">Chamada</h1>
@@ -46,15 +46,14 @@
 
   <div class="alunos-section" *ngIf="alunos.length > 0">
     <div class="instruction-row">
-      <i class="fas fa-comment-dots icon-yellow"></i>
-      <p>Toque no ícone de balão para adicionar observações</p>
+      <i class="fas" [ngClass]="chamadaIdExistente ? 'fa-info-circle icon-blue' : 'fa-comment-dots icon-yellow'"></i>
+      <p>{{ chamadaIdExistente ? 'Esta chamada já foi lançada. Você pode editar os dados abaixo.' : 'Toque no ícone de balão para adicionar observações' }}</p>
     </div>
     
     <div class="aluno-row-card-container" *ngFor="let aluno of alunos">
-      
       <div class="aluno-row-card">
         <div class="aluno-profile">
-          <div class="avatar-circle">{{ aluno.nome.charAt(0).toUpperCase() }}</div>
+          <div class="avatar-circle">{{ aluno.nome?.charAt(0).toUpperCase() }}</div>
           <span class="aluno-full-name">{{ aluno.nome }}</span>
         </div>
 
@@ -83,7 +82,7 @@
       <div class="obs-expand-area" *ngIf="aluno.exibirObs">
         <textarea 
           [(ngModel)]="aluno.observacao" 
-          placeholder="Digite a justificativa ou observação..."
+          placeholder="Digite a justificativa..."
           class="dark-textarea"
           rows="3">
         </textarea>
@@ -93,7 +92,8 @@
     <div class="footer-actions">
       <button class="btn-save-final" (click)="salvarChamada()" [disabled]="carregando">
         <span *ngIf="!carregando">
-          {{ isDataRetroativa ? 'Salvar Justificativas' : 'Salvar Chamada' }}
+          <i class="fas" [ngClass]="chamadaIdExistente ? 'fa-sync' : 'fa-save'"></i>
+          {{ chamadaIdExistente ? 'Atualizar Chamada' : 'Salvar Chamada' }}
         </span>
         <span *ngIf="carregando">Processando...</span>
       </button>
