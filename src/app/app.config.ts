@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch } from '@angular/common/http'; // Importe isso
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http'; // Importe withInterceptors
+import { authInterceptor } from '../app/interceptors/auth.interceptor'; // Importe sua função
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -11,8 +12,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes), 
     provideClientHydration(withEventReplay()),
     provideHttpClient(
-     withFetch()
-    ) // Adicione o serviço de HTTP aqui
-    
+      withFetch(),
+      withInterceptors([authInterceptor]) 
+    )
   ]
 };

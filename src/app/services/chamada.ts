@@ -49,8 +49,8 @@ export class ChamadaService {
   /**
    * Atualiza as presenças de uma chamada existente (em lote)
    */
-  alterarPresencasEmLote(id: string, alunos: AlunoPresencaModel[]): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/presencas`, alunos);
+  alterarPresencasEmLote(chamadaId: string, alunos: any[]) {
+    return this.http.put(`${this.apiUrl}/${chamadaId}/presencas`, alunos);
   }
 
   /**

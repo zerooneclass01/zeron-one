@@ -91,9 +91,9 @@
 
     <div class="footer-actions">
       <button class="btn-save-final" (click)="salvarChamada()" [disabled]="carregando">
-        <span *ngIf="!carregando">
-          <i class="fas" [ngClass]="chamadaIdExistente ? 'fa-sync' : 'fa-save'"></i>
-          {{ chamadaIdExistente ? 'Atualizar Chamada' : 'Salvar Chamada' }}
+          <span *ngIf="!carregando">
+          <i class="fas" [ngClass]="isDataRetroativa ? 'fa-sync' : 'fa-save'"></i>
+          {{ isDataRetroativa ? 'Atualizar Chamada' : 'Salvar Chamada' }}
         </span>
         <span *ngIf="carregando">Processando...</span>
       </button>

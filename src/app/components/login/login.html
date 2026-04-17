@@ -3,18 +3,41 @@
     <h1>Zero One</h1>
     <p>English Conversation</p>
 
-    <form>
+    <form (ngSubmit)="entrar()">
+      
       <div class="form-field">
         <label>Usuário</label>
-        <input type="text" placeholder="Digite seu usuário">
+        <input 
+          type="text" 
+          name="username" 
+          [(ngModel)]="loginData.username" 
+          placeholder="Digite seu usuário"
+          required>
       </div>
 
       <div class="form-field">
         <label>Senha</label>
-        <input type="password" placeholder="Digite sua senha">
+        <div class="password-wrapper">
+          <input 
+            [type]="verSenha ? 'text' : 'password'" 
+            name="senha" 
+            [(ngModel)]="loginData.senha" 
+            placeholder="Digite sua senha"
+            required>
+          
+          <button type="button" class="btn-eye" (click)="toggleSenha()">
+            <i class="fas" [ngClass]="verSenha ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
       </div>
 
-      <button type="submit" (click)="entrar()" class="btn-primary">Entrar</button>
+      <p class="error-msg" *ngIf="mensagemErro">{{ mensagemErro }}</p>
+
+      <button type="submit" class="btn-primary" [disabled]="carregando">
+        <span *ngIf="!carregando">Entrar</span>
+        <span *ngIf="carregando">Processando...</span>
+      </button>
+
     </form>
   </div>
 </div>

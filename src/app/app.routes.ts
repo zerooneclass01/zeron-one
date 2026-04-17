@@ -7,10 +7,10 @@ import { AlunoDetalhes } from './components/aluno-detalhes/aluno-detalhes';
 import { TurmaComponent } from './components/turma/turma';
 import { ProfessorComponent } from './components/professor/professor';
 import { Financeiro } from './components/financeiro/financeiro';
-import { Usuario } from './components/usuario/usuario';
 import { TurmaDetalheComponent } from './components/turma/turma-detalhe/turma-detalhe';
 import { ChamadaComponent } from './components/chamadas/chamadas';
 import { RelatorioChamada } from './components/chamadas/relatorio-chamada/relatorio-chamada'
+import {PerfilComponent} from './components/usuario/usuario'
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -26,7 +26,7 @@ export const routes: Routes = [
 
   { path: 'professor', component: ProfessorComponent },
   { path: 'financeiro', component: Financeiro },
-  { path: 'usuario', component: Usuario },
+  { path: 'Perfil', component: PerfilComponent },
 
   { path: 'chamadas', component: ChamadaComponent },
   { path:'relatorio-chamada/:id', component: RelatorioChamada },

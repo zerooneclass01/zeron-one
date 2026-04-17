@@ -64,3 +64,53 @@ input {
   cursor: pointer;
   margin-top: 10px;
 }
+
+/* Container relativo para posicionar o olho */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* O input deve ter um padding na direita para o texto não ficar embaixo do ícone */
+.dark-input {
+  width: 100%;
+  background-color: #1a1a1a; /* Fundo grafite igual aos seus cards */
+  border: 1px solid #333;
+  color: #fff;
+  padding: 12px 45px 12px 15px; /* 45px de espaço na direita */
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dark-input:focus {
+  border-color: #ff3333; /* Destaque em vermelho ao focar */
+}
+
+/* Estilo do botão do olho */
+.btn-eye {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #888; /* Cinza discreto */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  padding: 5px;
+  transition: color 0.2s;
+  z-index: 2;
+}
+
+.btn-eye:hover {
+  color: #ff3333; /* Olho fica vermelho ao passar o mouse */
+}
+
+/* Garante que o botão não tenha contorno ao clicar */
+.btn-eye:focus {
+  outline: none;
+}
