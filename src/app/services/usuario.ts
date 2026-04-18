@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 import { UsuarioResponse } from '../models/UsuarioResponse';
 
 @Injectable({
@@ -13,17 +13,18 @@ export class UsuarioService {
   private readonly apiUrl = `${environment.apiUrl}/Usuario`;
 
 
-  
 
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient) { }
 
   // ==========================================
   // 1. CHAMADAS DE API (BACKEND)
   // ==========================================
 
   /** Realiza o login e retorna o token JWT */
-  login(dados: any): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/Login`, dados);
+  // No seu UsuarioService
+  login(dados: any): Observable<{ token: string, role: number }> {
+    return this.http.post<{ token: string, role: number }>(`${this.apiUrl}/Login`, dados);
   }
 
   /** Cria um novo usuário (Exige Role Admin ou RH no C#) */
@@ -75,12 +76,12 @@ export class UsuarioService {
 
     try {
       const decoded: any = jwtDecode(token);
-      
+
       // Busca a claim de Role (pode ser 'role' ou o link completo da Microsoft)
-      const role = decoded['role'] || 
-                   decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-      
-      return role === 'Admin' || role ==='RH';
+      const role = decoded['role'] ||
+        decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+      return role === 'Admin' || role === 'RH';
     } catch (error) {
       console.error("Erro ao decodificar token:", error);
       return false;
@@ -99,7 +100,7 @@ export class UsuarioService {
   obterNomeUsuario(): string {
     const token = this.obterToken();
     if (!token) return 'Usuário';
-    
+
     const decoded: any = jwtDecode(token);
     return decoded['unique_name'] || decoded['name'] || 'Usuário';
   }

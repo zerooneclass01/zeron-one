@@ -26,7 +26,7 @@ export const routes: Routes = [
 
   { path: 'professor', component: ProfessorComponent },
   { path: 'financeiro', component: Financeiro },
-  { path: 'Perfil', component: PerfilComponent },
+  { path: 'usuario', component: PerfilComponent },
 
   { path: 'chamadas', component: ChamadaComponent },
   { path:'relatorio-chamada/:id', component: RelatorioChamada },

@@ -41,7 +41,9 @@ export class LoginComponent {
       next: (res) => {
         // 1. Salva o token recebido do seu C#
         this.usuarioService.salvarToken(res.token);
-        
+        localStorage.setItem('zero_one_token', res.token);
+        localStorage.setItem('user_role', res.role.toString());
+    
         // 2. Navega para o dashboard
         this.router.navigate(['/dashboard']);
         this.carregando = false;

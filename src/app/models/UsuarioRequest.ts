@@ -2,5 +2,5 @@
 export interface CriarUsuarioRequest {
   username: string;
   senha?: string;
-  role: string; // Admin, RH, Professor, etc.
+  role: number; // Admin, RH, Professor, etc.
 }

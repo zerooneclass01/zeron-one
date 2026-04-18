@@ -1,48 +1,59 @@
 <div class="perfil-container">
-  <header class="header">
-    <button class="btn-voltar" (click)="voltar()">
-      <i class="fas fa-arrow-left me-2"></i> Voltar
+  <header class="header-section">
+    <button class="btn-voltar-link" (click)="voltar()">
+      <i class="fas fa-chevron-left"></i> Voltar
     </button>
-    <div class="d-flex justify-content-between align-items-center mt-3">
-      <h1>Gestão de Usuários</h1>
-      <button class="btn-primary-red w-auto px-4" (click)="abrirModalCadastro()">
-        <i class="fas fa-user-plus me-2"></i> Novo Usuário
-      </button>
+
+    <div class="header-content mt-3">
+      <div class="title-group">
+        <h1 class="display-title">Usuários</h1>
+        <p class="text-secondary mb-0">Gerencie acessos e permissões da equipe</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn-reset-global" (click)="prepararResetProprio()" title="Alterar Minha Senha">
+          <i class="fas fa-key"></i>
+        </button>
+
+        @if(podeCadastrar()){
+        <button class="btn-zero-red" (click)="abrirModalCadastro()">
+          <i class="fas fa-user-plus me-2"></i> <span>Novo Usuário</span>
+        </button>
+        }
+      </div>
     </div>
   </header>
 
-  <div class="card-dark mt-4">
-    <div class="table-responsive">
-      <table class="table table-dark table-hover mb-0">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>E-mail</th>
-            <th>Nível</th>
-            <th class="text-center">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of listaUsuarios">
-            <td>{{ user.username }}</td>
-            <td>
-              <span class="badge" [ngClass]="{
-                'bg-danger': user.role === 'Admin',
-                'bg-info': user.role === 'RH',
-                'bg-warning text-dark': user.role === 'Recepcao',
-                'bg-success': user.role === 'Professor'
-              }">
-                {{ user.role }}
-              </span>
-            </td>
-            <td class="text-center">
-              <button class="btn-action-key" title="Resetar Senha" (click)="resetarSenha(user)">
-                <i class="fas fa-key"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="search-area mt-4">
+    <div class="search-input-group">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Buscar por nome ou nível..." (input)="filtrar($event)">
+    </div>
+  </div>
+
+  <div class="users-wrapper mt-4">
+    <div *ngFor="let user of listaUsuarios()" class="user-card-row">
+      <div class="user-main">
+        <div class="avatar-red-glow">
+          {{ user.username.substring(0,1).toUpperCase() }}
+        </div>
+        <div class="user-info">
+          <h5 class="user-name">{{ user.username }}</h5>
+          <div class="user-meta">
+            <span class="role-text">{{ user.role }}</span>
+            <span class="divider">•</span>
+            <span class="id-text">ID: {{ user.id.substring(0,6) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="user-actions">
+        <span class="status-pill">Ativo</span>
+        <i class="fas fa-chevron-right arrow-icon"></i>
+      </div>
     </div>
   </div>
 </div>
+
+<dialog id="modalUsuario" class="modal-zero-one">
+  </dialog>
