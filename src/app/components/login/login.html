@@ -4,29 +4,26 @@
     <p>English Conversation</p>
 
     <form (ngSubmit)="entrar()">
-      
+
       <div class="form-field">
         <label>Usuário</label>
-        <input 
-          type="text" 
-          name="username" 
-          [(ngModel)]="loginData.username" 
-          placeholder="Digite seu usuário"
-          required>
+        <input type="text" name="username" [(ngModel)]="loginData.username" placeholder="Digite seu usuário" required>
       </div>
 
       <div class="form-field">
         <label>Senha</label>
         <div class="password-wrapper">
-          <input 
-            [type]="verSenha ? 'text' : 'password'" 
-            name="senha" 
-            [(ngModel)]="loginData.senha" 
-            placeholder="Digite sua senha"
-            required>
-          
+          <input [type]="verSenha ? 'text' : 'password'" name="senha" [(ngModel)]="loginData.senha"
+            placeholder="Digite sua senha" required>
+
           <button type="button" class="btn-eye" (click)="toggleSenha()">
             <i class="fas" [ngClass]="verSenha ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+
+        <div class="text-end mt-1">
+          <button type="button" class="btn-link-red" (click)="esqueciSenha()">
+            Esqueceu a senha?
           </button>
         </div>
       </div>

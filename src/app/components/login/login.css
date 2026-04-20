@@ -114,3 +114,18 @@ input {
 .btn-eye:focus {
   outline: none;
 }
+
+.btn-link-red {
+  background: transparent !important; /* Sem fundo */
+  border: none !important;            /* Sem borda */
+  color: #ff0000 !important;          /* Texto Vermelho */
+  padding: 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-link-red:hover {
+  text-decoration: underline;         /* Sublinha no hover */
+  opacity: 0.8;                       /* Efeito suave */
+}

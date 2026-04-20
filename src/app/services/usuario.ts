@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { jwtDecode } from 'jwt-decode';
+import { HttpParams } from '@angular/common/http';
 import { UsuarioResponse } from '../models/UsuarioResponse';
 
 @Injectable({
@@ -33,18 +34,22 @@ export class UsuarioService {
     return this.http.post(`${this.apiUrl}/Criar-Usuario`, usuario, { responseType: 'text' });
   }
 
-  /** Solicita recuperação de senha via e-mail */
-  esqueciSenha(email: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/esqueci-senha`, `"${email}"`, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      responseType: 'text'
-    });
-  }
+  /** Solicita recuperação ACESSO */
+  esqueciSenha(dados: { username: string, email: string }) {
+    // Criamos os parâmetros da Query String
+    const params = new HttpParams()
+      .set('usuario', dados.username)
+      .set('email', dados.email);
 
-  /** Altera a senha usando o token de reset */
-  resetarSenha(dados: any): Observable<string> {
-    return this.http.post(`${this.apiUrl}/resetar-senha`, dados, { responseType: 'text' });
+    // Passamos os params no objeto de opções do POST
+    return this.http.post(`${this.apiUrl}/esqueci-senha`, {}, { params });
   }
+  /** Altera a senha usando o token de reset */
+  // src/app/services/usuario.service.ts
+
+  resetarSenha(dados: { username: string, senha: string }) {
+  return this.http.post(`${this.apiUrl}/resetar-senha`, dados);
+}
 
   // ==========================================
   // 2. GESTÃO DE TOKEN E SESSÃO
