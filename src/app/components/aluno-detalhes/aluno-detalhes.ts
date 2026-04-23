@@ -113,11 +113,11 @@ export class AlunoDetalhes implements OnInit {
       .reduce((sum, m) => sum + m.valor, 0);
 
     this.resumo.atrasado = this.mensalidades
-      .filter(m => String(m.status) === 'Atrasado' || String(m.status) === '2')
+      .filter(m => String(m.status) === 'Atrasado' || String(m.status) === '1')
       .reduce((sum, m) => sum + m.valor, 0);
 
     this.resumo.pendente = this.mensalidades
-      .filter(m => String(m.status) === 'Pendente' || String(m.status) === '1')
+      .filter(m => String(m.status) === 'Pendente' || String(m.status) === '2')
       .reduce((sum, m) => sum + m.valor, 0);
   }
   marcarPago(id: string): void {

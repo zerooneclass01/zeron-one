@@ -55,5 +55,8 @@ export class Dashboard {
   irParaChamadas(){
     this.router.navigate(['/chamadas'])
   }
-
+ 
+  irParaRanking(){
+    this.router.navigate(['../ranking'])
+  }
 }

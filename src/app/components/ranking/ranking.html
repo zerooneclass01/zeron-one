@@ -1,0 +1,90 @@
+<div class="zero-one-ranking-wrapper">
+
+    <header class="ranking-app-header">
+        <div class="header-content-inner">
+            <div class="brand-area">
+                <h1 class="main-title">
+                    Class rankings <span class="highlight-red">ZERO ONE</span>
+                </h1>
+                <p class="brand-subtitle">Classification to determine the best student in the class.</p>
+            </div>
+
+            <div class="turma-selector-area">
+                <label for="turmaSelect">TURMA:</label>
+                <div class="select-wrapper">
+                    <select id="turmaSelect" class="zero-one-select" [(ngModel)]="turmaSelecionadaId" (change)="aoSelecionarTurma()">
+                        <option value="" disabled>Selecione uma turma...</option>
+                        @for (t of turmas; track t.id) {
+                            <option [value]="t.id">{{ t.nome }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <button class="link-voltar" (click)="voltar()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </header>
+
+    <main class="ranking-content-area">
+        @if (loading) {
+            <div class="status-box loading">
+                <div class="spinner"></div>
+                <p>Sincronizando com a Matrix...</p>
+            </div>
+        }
+
+        @else if (turmaSelecionadaId) {
+            <div class="admin-actions-bar">
+                @if (ranking.length === 0) {
+                    <button class="btn-action-main btn-create" (click)="gerarNovoRanking()">
+                        <i class="icon">🚀</i> INICIALIZAR RANKING DA TURMA
+                    </button>
+                } @else {
+                    <button class="btn-action-main btn-delete" (click)="removerRanking()">
+                        <i class="icon">🗑️</i> EXCLUIR RANKING ATUAL
+                    </button>
+                }
+            </div>
+
+            <div class="ranking-cards-grid">
+                @for (aluno of ranking; track aluno.id; let i = $index) {
+                    <div class="aluno-premium-card" [class.top-one-card]="i === 0">
+                        
+                        <div class="card-rank-area">
+                            <span class="rank-pos">#{{ i + 1 }}</span>
+                            @if (i === 0) { <span class="crown-icon">👑</span> }
+                        </div>
+
+                        <div class="card-aluno-info">
+                            <div class="aluno-visual">
+                                <div class="avatar-placeholder">
+                                    {{ aluno.inicial }}
+                                </div>
+                            </div>
+                            <span class="aluno-full-name">{{ aluno.nomeAluno }}</span>
+                        </div>
+
+                        <div class="card-controls-area">
+                            <div class="xp-display-badge">
+                                <span class="xp-value">{{ aluno.pontos }}</span>
+                                <span class="xp-label">XP</span>
+                            </div>
+                            <div class="points-controls-group">
+                                <button class="btn-step-control minus" (click)="alterarPontos(aluno, -1)">-1</button>
+                                <button class="btn-step-control plus" (click)="alterarPontos(aluno, 1)">+1</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="status-box empty">
+                <div class="icon-pulse">🎯</div>
+                <h2>A Matrix está vazia...</h2>
+                <p>Carregando dados das turmas...</p>
+            </div>
+        }
+    </main>
+</div>

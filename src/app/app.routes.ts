@@ -10,7 +10,8 @@ import { Financeiro } from './components/financeiro/financeiro';
 import { TurmaDetalheComponent } from './components/turma/turma-detalhe/turma-detalhe';
 import { ChamadaComponent } from './components/chamadas/chamadas';
 import { RelatorioChamada } from './components/chamadas/relatorio-chamada/relatorio-chamada'
-import {PerfilComponent} from './components/usuario/usuario'
+import { PerfilComponent } from './components/usuario/usuario'
+import { RankingComponent } from './components/ranking/ranking';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -29,7 +30,8 @@ export const routes: Routes = [
   { path: 'usuario', component: PerfilComponent },
 
   { path: 'chamadas', component: ChamadaComponent },
-  { path:'relatorio-chamada/:id', component: RelatorioChamada },
+  { path: 'relatorio-chamada/:id', component: RelatorioChamada },
+  { path: 'ranking', component: RankingComponent },
 
   { path: '**', redirectTo: 'dashboard' }
 ];
