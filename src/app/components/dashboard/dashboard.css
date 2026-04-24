@@ -184,3 +184,50 @@
 .btn-sair i {
   font-size: 1.1rem;
 }
+
+/* No seu .card-grid, adicione/ajuste: */
+.card-grid {
+  display: grid;
+  /* auto-fill preenche o espaço; minmax garante que o card nunca fique menor que 250px 
+     a menos que a tela seja menor que isso */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .db-header {
+    flex-direction: column; /* Empilha Título e Botão Sair */
+    align-items: flex-start; /* Alinha tudo à esquerda */
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
+  .btn-sair {
+    padding: 0; /* Remove padding para alinhar com o texto acima */
+    font-size: 0.9rem;
+  }
+  
+  .red-text {
+    font-size: 1.5rem; /* Título um pouco menor no celular */
+  }
+}
+
+@media (max-width: 400px) {
+  .card-horizontal {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .icon-box {
+    min-width: 40px; /* Garante que o box do ícone não encolha */
+    height: 40px;
+  }
+
+  .card-info h3 {
+    font-size: 0.9rem;
+    white-space: nowrap; /* Evita que o título quebre em duas linhas */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adiciona "..." se o nome for muito grande */
+  }
+}

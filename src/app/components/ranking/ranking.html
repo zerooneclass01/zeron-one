@@ -12,7 +12,10 @@
             <div class="turma-selector-area">
                 <label for="turmaSelect">TURMA:</label>
                 <div class="select-wrapper">
-                    <select id="turmaSelect" class="zero-one-select" [(ngModel)]="turmaSelecionadaId" (change)="aoSelecionarTurma()">
+                    <select id="turmaSelect" 
+                            class="zero-one-select" 
+                            [(ngModel)]="turmaSelecionadaId" 
+                            (ngModelChange)="onTurmaChange($event)">
                         <option value="" disabled>Selecione uma turma...</option>
                         @for (t of turmas; track t.id) {
                             <option [value]="t.id">{{ t.nome }}</option>
@@ -83,7 +86,7 @@
             <div class="status-box empty">
                 <div class="icon-pulse">🎯</div>
                 <h2>A Matrix está vazia...</h2>
-                <p>Carregando dados das turmas...</p>
+                <p>Selecione uma turma para carregar os dados.</p>
             </div>
         }
     </main>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,11 +26,23 @@ export class RankingComponent implements OnInit {
     private turmaService: TurmaService,
     private alunoService: AlunoService,
     private rankingService: RankingService,
-    private router: Router
+    private router: Router,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.carregarDadosIniciais();
+  }
+
+  // DISPARO AUTOMÁTICO: Chamado pelo (ngModelChange) no HTML
+  onTurmaChange(novoId: string) {
+    this.turmaSelecionadaId = novoId;
+    if (this.turmaSelecionadaId) {
+      this.aoSelecionarTurma();
+    } else {
+      this.ranking = [];
+      this.cdRef.detectChanges();
+    }
   }
 
   carregarDadosIniciais() {
@@ -42,45 +54,37 @@ export class RankingComponent implements OnInit {
       next: (res) => {
         this.turmas = res.resTurmas;
 
-        // 1. Mapeia os alunos (para garantir que os nomes apareçam)
-        res.resAlunos.forEach((a: any) => this.alunosMap.set(a.id, a));
+        // Mapeia alunos para busca instantânea
+        res.resAlunos.forEach((a: any) => {
+          if (a.id) this.alunosMap.set(a.id.toString().toLowerCase(), a);
+        });
 
-        // 2. SELEÇÃO AUTOMÁTICA
-        if (this.turmas && this.turmas.length > 0) {
-          // Define a primeira turma como selecionada
-          this.turmaSelecionadaId = this.turmas[0].id;
-
-          // 3. CONSULTA AUTOMÁTICA (Isso faz a tabela aparecer sem clique)
-          this.aoSelecionarTurma();
-        } else {
-          this.loading = false;
-        }
+        // Mantemos loading false para mostrar a mensagem "Selecione uma turma"
+        this.loading = false;
+        this.cdRef.detectChanges();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdRef.detectChanges();
       }
     });
   }
 
   aoSelecionarTurma() {
-
-    const idCapturado = this.turmaSelecionadaId;
-    
-    if (!idCapturado) return;
-
     if (!this.turmaSelecionadaId) return;
 
     this.loading = true;
+    this.ranking = []; // Limpa a tela para feedback visual imediato
+
     this.rankingService.getRankingDaTurma(this.turmaSelecionadaId).subscribe({
       next: (res) => {
         this.ranking = res.map((item: any) => {
-          // 1. Tenta pegar o ID de qualquer forma (alunoId ou alunoid)
-          const idDoAlunoNoRanking = item.alunoId || item.alunoid;
+          const idBusca = (item.alunoId || item.alunoid || '').toString().toLowerCase();
+          const dadosAluno = this.alunosMap.get(idBusca);
 
-          // 2. Busca no mapa garantindo que a comparação não falhe por causa de letras maiúsculas/minúsculas
-          // Convertemos ambos para string e minúsculo para garantir o match
-          const dadosAluno = Array.from(this.alunosMap.values()).find(
-            a => a.id.toLowerCase() === idDoAlunoNoRanking.toLowerCase()
-          );
-
-          const nomeFinal = dadosAluno ? (dadosAluno.nome || dadosAluno.nomeCompleto) : 'Estudante não vinculado';
+          const nomeFinal = dadosAluno 
+            ? (dadosAluno.nome || dadosAluno.nomeCompleto) 
+            : 'Estudante não vinculado';
 
           return {
             ...item,
@@ -90,54 +94,66 @@ export class RankingComponent implements OnInit {
         }).sort((a: any, b: any) => b.pontos - a.pontos);
 
         this.loading = false;
+        this.cdRef.detectChanges(); // Força a renderização dos dados na tela
       },
-      error: () => this.loading = false
+      error: () => {
+        this.loading = false;
+        this.cdRef.detectChanges();
+      }
+    });
+  }
+
+  alterarPontos(itemRanking: any, valor: number) {
+    const backup = itemRanking.pontos;
+    const novosPontos = itemRanking.pontos + valor;
+
+    if (novosPontos < 0) return;
+
+    itemRanking.pontos = novosPontos;
+    this.ranking.sort((a, b) => b.pontos - a.pontos);
+
+    this.rankingService.atualizarRanking(itemRanking.id, itemRanking).subscribe({
+      next: () => this.cdRef.detectChanges(),
+      error: () => {
+        itemRanking.pontos = backup;
+        this.ranking.sort((a, b) => b.pontos - a.pontos);
+        this.cdRef.detectChanges();
+      }
     });
   }
 
   removerRanking() {
-    const idParaRemover = this.turmaSelecionadaId;
+    if (!this.turmaSelecionadaId) return;
 
-    if (!idParaRemover || idParaRemover === '') {
-      console.error("Nenhuma turma selecionada para remover");
-      return;
-    }
-
-    if (confirm('Deseja apagar todo o ranking?')) {
+    if (confirm('Deseja apagar todo o ranking desta turma?')) {
       this.loading = true;
-      // O service deve chamar algo como: return this.http.delete(`${this.apiUrl}/${turmaId}`)
-      this.rankingService.remover(idParaRemover).subscribe({
+      this.rankingService.remover(this.turmaSelecionadaId).subscribe({
         next: () => {
           this.ranking = [];
           this.loading = false;
+          this.cdRef.detectChanges();
         },
-        error: (err) => {
-          console.error("Erro no servidor:", err);
+        error: () => {
           this.loading = false;
+          this.cdRef.detectChanges();
         }
       });
     }
   }
 
-  // ... (outros métodos: alterarPontos, gerarNovoRanking, voltar)
-  alterarPontos(itemRanking: any, valor: number) {
-    const backup = itemRanking.pontos;
-    itemRanking.pontos += valor;
-    if (itemRanking.pontos < 0) { itemRanking.pontos = 0; return; }
-    this.ranking.sort((a, b) => b.pontos - a.pontos);
-
-    this.rankingService.atualizarRanking(itemRanking.id, itemRanking).subscribe({
+  gerarNovoRanking() {
+    if (!this.turmaSelecionadaId) return;
+    this.loading = true;
+    this.rankingService.criarRankingTurma(this.turmaSelecionadaId).subscribe({
+      next: () => this.aoSelecionarTurma(),
       error: () => {
-        itemRanking.pontos = backup;
-        this.ranking.sort((a, b) => b.pontos - a.pontos);
+        this.loading = false;
+        this.cdRef.detectChanges();
       }
     });
   }
 
-  gerarNovoRanking() {
-    this.loading = true;
-    this.rankingService.criarRankingTurma(this.turmaSelecionadaId).subscribe(() => this.aoSelecionarTurma());
+  voltar() {
+    this.router.navigate(['/deshboard']);
   }
-
-  voltar() { this.router.navigate(['/deshboard']); }
 }
