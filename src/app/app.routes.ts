@@ -6,7 +6,7 @@ import { AlunoAtualizar } from './components/aluno-atualizar/aluno-atualizar';
 import { AlunoDetalhes } from './components/aluno-detalhes/aluno-detalhes';
 import { TurmaComponent } from './components/turma/turma';
 import { ProfessorComponent } from './components/professor/professor';
-import { Financeiro } from './components/financeiro/financeiro';
+import { FinanceiroDespesasComponent } from './components/financeiro-despesa/financeiro-despesa';
 import { TurmaDetalheComponent } from './components/turma/turma-detalhe/turma-detalhe';
 import { ChamadaComponent } from './components/chamadas/chamadas';
 import { RelatorioChamada } from './components/chamadas/relatorio-chamada/relatorio-chamada'
@@ -26,7 +26,7 @@ export const routes: Routes = [
   { path: 'turma/turma-detalhe/:id', component: TurmaDetalheComponent },
 
   { path: 'professor', component: ProfessorComponent },
-  { path: 'financeiro', component: Financeiro },
+  { path: 'financeiro', component:FinanceiroDespesasComponent },
   { path: 'usuario', component: PerfilComponent },
 
   { path: 'chamadas', component: ChamadaComponent },
