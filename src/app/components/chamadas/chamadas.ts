@@ -78,7 +78,7 @@ export class ChamadaComponent implements OnInit {
         this.chamadaService.obterPorTurmaEData(this.idTurmaSelecionada, this.dataAula).subscribe({
           next: (chamada) => {
             if (chamada) {
-              this.chamadaIdExistente = chamada.id;
+              this.chamadaIdExistente = chamada.idChamada;  
 
               // 3. O PULO DO GATO: Mapeia os alunos da turma, mas busca o status dentro da 'chamada'
               this.alunos = alunosDaTurma.map((alunoOficial: any) => {
@@ -136,23 +136,23 @@ export class ChamadaComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-salvarChamada() {
-  if (!this.idTurmaSelecionada) {
-    alert("Selecione uma turma.");
-    return;
-  }
+  salvarChamada() {
+    if (!this.idTurmaSelecionada) {
+      alert("Selecione uma turma.");
+      return;
+    }
 
-  if (this.isDataRetroativa) {
-    this.executarAtualizacao();
-  } else {
-    // Se for data de hoje e não tiver ID existente, registra novo
-    if (this.chamadaIdExistente) {
+    if (this.isDataRetroativa) {
       this.executarAtualizacao();
     } else {
-      this.executarRegistroChamadaNormal();
+      // Se for data de hoje e não tiver ID existente, registra novo
+      if (this.chamadaIdExistente) {
+        this.executarAtualizacao();
+      } else {
+        this.executarRegistroChamadaNormal();
+      }
     }
   }
-}
 
   private executarRegistroChamadaNormal() {
     this.carregando = true;
@@ -178,37 +178,43 @@ salvarChamada() {
   }
 
   private executarAtualizacao() {
+    if (!this.chamadaIdExistente) {
+      console.error("Não foi possível atualizar: ID da chamada não encontrado.");
+      alert("Erro interno: ID da chamada ausente.");
+      return;
+    }
+
     this.carregando = true;
     const alunosParaAtualizar = this.alunos.map(a => ({
-      alunoId: a.id,
+      alunoId: a.id, // Certifique-se que o 'id' aqui é o ID do Aluno
       presente: !!a.presente,
       observacao: a.observacao
     }));
 
-    this.chamadaService.alterarPresencasEmLote(this.chamadaIdExistente!, alunosParaAtualizar).subscribe({
+    this.chamadaService.alterarPresencasEmLote(this.chamadaIdExistente, alunosParaAtualizar).subscribe({
       next: () => {
         this.carregando = false;
         alert("Chamada atualizada com sucesso!");
-        this.irParaRelatorio();
       },
-      error: () => {
+      error: (err) => {
         this.carregando = false;
+        console.error("Erro na API:", err);
         alert("Erro ao atualizar.");
       }
     });
   }
 
   private montarPayload(): AdicionarChamadaModel {
-  return {
-    turmaId: this.idTurmaSelecionada,
-    dataAula: this.dataAula,
-    alunos: this.alunos.map(a => ({
-      alunoId: a.id, // Alinhado com o objeto da tela
-      presente: !!a.presente,
-      observacao: a.observacao || "aluno presente"
-    }))
-  };
-}
+    return {
+      turmaId: this.idTurmaSelecionada,
+      dataAula: this.dataAula,
+      alunos: this.alunos.map(a => ({
+        alunoId: a.id, // Alinhado com o objeto da tela
+        presente: !!a.presente,
+        observacao: a.observacao || "aluno presente"
+      }))
+    };
+  }
 
   irParaRelatorio() {
     if (!this.idTurmaSelecionada) return;
