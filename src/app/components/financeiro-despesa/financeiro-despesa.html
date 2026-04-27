@@ -1,171 +1,157 @@
 <div class="financeiro-wrapper">
-    <header class="fin-header">
-        <button class="btn-back" (click)="voltar()">← Voltar</button>
-        <h1>Financeiro</h1>
-        <p class="subtitle">Controle de Mensalidades e Fluxo de Despesas</p>
-    </header>
+  <button class="btn-back" (click)="voltar()">← Voltar ao Dashboard</button>
 
-    <div class="actions-bar">
-        <div class="filter-group">
-            <span>📅 Período de Referência:</span>
-            <select class="fin-select" [(ngModel)]="mesSelecionado" (change)="carregarDados()">
-                <option
-                    *ngFor="let m of ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']"
-                    [value]="m">{{m}}</option>
+  <header class="actions-bar">
+    <div class="nav-buttons">
+      <button class="btn-nav" [class.active]="abaAtiva === 'mensalidades'" (click)="abaAtiva = 'mensalidades'">
+        Mensalidades
+      </button>
+      <button class="btn-nav" [class.active]="abaAtiva === 'despesas'" (click)="abaAtiva = 'despesas'">
+        Despesas
+      </button>
+    </div>
+
+    <div class="search-container" *ngIf="abaAtiva === 'mensalidades'">
+      <input type="text" class="fin-input-search" placeholder="🔍 Pesquisar aluno..." [(ngModel)]="filtroAluno"
+        (input)="filtrarAlunos()">
+    </div>
+
+    <div class="header-right">
+      <select class="fin-select" [(ngModel)]="mesSelecionado" (change)="carregarDados()">
+        <option
+          *ngFor="let m of ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']"
+          [value]="m">
+          {{ m }}
+        </option>
+      </select>
+      <button class="btn-add" (click)="exibirModalDespesa = true">+ Nova Despesa</button>
+    </div>
+  </header>
+
+  <div class="summary-grid">
+    <div class="card-summary">
+      <div class="card-header">Entradas Recebidas</div>
+      <h2 class="text-success">R$ {{ balancete.totalMensalidadesRecebidas | number:'1.2-2' }}</h2>
+    </div>
+    <div class="card-summary">
+      <div class="card-header">Total de Saídas</div>
+      <h2 class="text-danger">R$ {{ balancete.totalGeralDespesas | number:'1.2-2' }}</h2>
+    </div>
+    <div class="card-summary">
+      <div class="card-header">Saldo Líquido</div>
+      <h2 [style.color]="balancete.saldoLiquido >= 0 ? '#28a745' : '#e51e1e'">
+        R$ {{ balancete.saldoLiquido | number:'1.2-2' }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table *ngIf="abaAtiva === 'mensalidades'" class="fin-table">
+      <thead>
+        <tr>
+          <th>Aluno</th>
+          <th>Valor</th>
+          <th>Status</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of mensalidadesFiltradas">
+          <td style="font-weight: 600;">{{ m.alunoNome }}</td>
+          <td>R$ {{ m.valor | number:'1.2-2' }}</td>
+          <td>
+            <select [ngModel]="m.status.toString()" (change)="alterarStatus(m.id, $any($event.target).value)"
+              class="status-select-atua" [ngClass]="statusTraducao[m.status.toString()]?.toLowerCase()">
+              <option value="0">Pago</option>
+              <option value="1">Atrasado</option>
+              <option value="2">Pendente</option>
             </select>
-        </div>
+          </td>
+          <td>
+            <button *ngIf="m.status.toString() !== '0'" (click)="confirmarPagamento(m.id)" class="btn-add-table">
+              Dar Baixa
+            </button>
+            <span *ngIf="m.status.toString() === '0'" class="text-success">✔ Recebido</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-        <div class="nav-buttons">
-            <button class="btn-nav" [class.active]="abaAtiva === 'mensalidades'"
-                (click)="abaAtiva = 'mensalidades'">Mensalidades</button>
-            <button class="btn-nav" [class.active]="abaAtiva === 'despesas'"
-                (click)="abaAtiva = 'despesas'">Despesas</button>
+    <table *ngIf="abaAtiva === 'despesas'" class="fin-table">
+      <thead>
+        <tr>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Valor</th>
+          <th>Vencimento</th>
+          <th>Pagamento</th>
+          <th style="text-align: center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of balancete.despesas">
+          <td style="font-weight: 600;">{{ d.descricao || d.descricao }}</td>
+          <td><span class="badge">{{ traduzirCategoria(d.categoria) }}</span></td>
+          <td class="text-danger" style="font-weight: bold;">R$ {{ d.valor | number:'1.2-2' }}</td>
+          <td>{{ d.dataVencimento | date:'dd/MM/yyyy' }}</td>
+          <td>{{ d.dataPagamento ? (d.dataPagamento | date:'dd/MM/yyyy') : '---' }}</td>
+          <td style="text-align: center;">
+            <button class="btn-delete" (click)="removerDespesa(d.id)" title="Excluir">
+              🗑️
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-            <button *ngIf="abaAtiva === 'despesas'" class="btn-add" (click)="exibirModalDespesa = true">+ Nova
-                Despesa</button>
-            <button *ngIf="abaAtiva === 'mensalidades'" class="btn-add" (click)="exibirModalMensalidade = true">+ Gerar
-                Mensalidade</button>
+  <div class="modal-overlay" *ngIf="exibirModalDespesa">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nova Despesa</h2>
+      </div>
+
+      <div class="form-group">
+        <label>Descrição</label>
+        <input type="text" [(ngModel)]="novaDespesa.descricao" placeholder="Ex: Aluguel, Luz...">
+      </div>
+
+      <div class="form-group">
+        <label>Valor (R$)</label>
+        <input type="number" [(ngModel)]="novaDespesa.valor" placeholder="0,00">
+      </div>
+
+      <div class="form-group">
+        <label>Data do Pagamento</label>
+        <div class="input-date-wrapper">
+          <input type="text" class="fin-input-text" placeholder="DD/MM/AAAA" [(ngModel)]="novaDespesa.dataPagamento">
+          <input type="date" class="hidden-date-picker" #pagoPicker
+            (change)="novaDespesa.dataPagamento = formatarData(pagoPicker.value)">
+          <button type="button" class="btn-calendar" (click)="pagoPicker.showPicker()">📅</button>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Data de Vencimento</label>
+        <div class="input-date-wrapper">
+          <input type="text" class="fin-input-text" placeholder="DD/MM/AAAA" [(ngModel)]="novaDespesa.dataVencimento">
+          <input type="date" class="hidden-date-picker" #vencPicker
+            (change)="novaDespesa.dataVencimento = formatarData(vencPicker.value)">
+          <button type="button" class="btn-calendar" (click)="vencPicker.showPicker()">📅</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Categoria</label>
+        <select [(ngModel)]="novaDespesa.categoria">
+          <option *ngFor="let cat of categorias; let i = index" [value]="i">{{ cat }}</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="fecharModalDespesa()">Cancelar</button>
+        <button class="btn-add-modal" (click)="salvarDespesa()">Salvar Despesa</button>
+      </div>
     </div>
-
-    <div class="summary-grid">
-        <div class="card-summary">
-            <div class="card-header">Entradas Recebidas <span class="icon">↗</span></div>
-            <h2>R$ {{ balancete.totalMensalidadesRecebidas | number:'1.2-2' }}</h2>
-            <p class="green-text">Mensalidades confirmadas</p>
-        </div>
-        <div class="card-summary">
-            <div class="card-header">Total de Saídas <span class="icon">↘</span></div>
-            <h2>R$ {{ balancete.totalGeralDespesas | number:'1.2-2' }}</h2>
-            <p class="red-text">Despesas registradas no mês</p>
-        </div>
-        <div class="card-summary saldo-card">
-            <div class="card-header">Saldo Líquido <span class="icon">💳</span></div>
-            <h2 [ngClass]="balancete.saldoLiquido >= 0 ? 'green-text' : 'red-text'">
-                R$ {{ balancete.saldoLiquido | number:'1.2-2' }}
-            </h2>
-            <p class="gray-text">Resultado mensal real</p>
-        </div>
-    </div>
-
-    <div class="table-container" *ngIf="abaAtiva === 'mensalidades'">
-        <div class="table-header-flex">
-            <h3>Lista de Recebimentos - {{ mesSelecionado }}</h3>
-        </div>
-        <table class="fin-table">
-            <thead>
-                <tr>
-                    <th>Aluno</th>
-                    <th>Valor</th>
-                    <th>Vencimento</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let m of balancete.mensalidades">
-                    <td>{{ m.alunoNome }}</td>
-                    <td>R$ {{ m.valor | number:'1.2-2' }}</td>
-                    <td>{{ m.vencimento | date:'dd/MM/yyyy' }}</td>
-                    <td>
-                        <span class="badge" [ngClass]="m.status.toLowerCase()">{{ m.status }}</span>
-                    </td>
-                    <td>
-                        <button *ngIf="m.status !== 'Pago'" (click)="confirmarPagamento(m.id)"
-                            class="btn-pay">Confirmar</button>
-                        <span *ngIf="m.status === 'Pago'" class="text-done">✓</span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="table-container" *ngIf="abaAtiva === 'despesas'">
-        <div class="table-header-flex">
-            <h3>Detalhamento de Gastos - {{ mesSelecionado }}</h3>
-        </div>
-        <table class="fin-table">
-            <thead>
-                <tr>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Data Vencimento</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let d of balancete.despesas">
-                    <td>{{ d.descricao }}</td>
-                    <td>R$ {{ d.valor | number:'1.2-2' }}</td>
-                    <td>{{ d.dataVencimento | date:'dd/MM/yyyy' }}</td>
-                    <td shadow>
-                        <span class="badge" [ngClass]="d.status.toLowerCase()">
-                            {{ d.status }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="modal-overlay" *ngIf="exibirModalDespesa">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Registrar Gasto Mensal</h2>
-                <button (click)="fecharModalDespesa()" class="btn-close">×</button>
-            </div>
-            <form (submit)="salvarDespesa()">
-                <div class="form-group">
-                    <label>Descrição da Despesa</label>
-                    <input type="text" [(ngModel)]="novaDespesa.descricao" name="d1"
-                        placeholder="Ex: Aluguel, Internet, Papelaria..." required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Valor (R$)</label>
-                        <input type="number" step="0.01" [(ngModel)]="novaDespesa.valor" name="d2" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Data de Vencimento</label>
-                        <input type="date" [(ngModel)]="novaDespesa.dataVencimento" name="d3" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" (click)="fecharModalDespesa()" class="btn-cancel">Cancelar</button>
-                    <button type="submit" class="btn-add">Salvar Registro</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-overlay" *ngIf="exibirModalMensalidade">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Gerar Cobrança de Aluno</h2>
-                <button (click)="fecharModalMensalidade()" class="btn-close">×</button>
-            </div>
-            <form (submit)="gerarMensalidade()">
-                <div class="form-group">
-                    <label>Selecionar Aluno</label>
-                    <select [(ngModel)]="novaMensalidade.alunoId" name="m1" class="fin-select-full" required>
-                        <option *ngFor="let a of listaAlunos" [value]="a.id">{{a.nome}}</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Valor da Parcela</label>
-                        <input type="number" step="0.01" [(ngModel)]="novaMensalidade.valor" name="m2" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Data de Vencimento</label>
-                        <input type="date" [(ngModel)]="novaMensalidade.vencimento" name="m3" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" (click)="fecharModalMensalidade()" class="btn-cancel">Cancelar</button>
-                    <button type="submit" class="btn-add">Gerar Mensalidade</button>
-                </div>
-            </form>
-        </div>
-    </div>
+  </div>
 </div>

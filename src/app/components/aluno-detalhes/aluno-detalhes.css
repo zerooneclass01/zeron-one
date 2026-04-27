@@ -98,3 +98,26 @@
 .color-name{
   color: #fff;
 }
+
+/* As classes devem bater com o retorno do toLowerCase() */
+.badge-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.pago { 
+    background-color: rgba(46, 204, 113, 0.2); 
+    color: #2ecc71; 
+}
+
+.atrasado { 
+    background-color: rgba(231, 76, 60, 0.2); 
+    color: #e74c3c; 
+}
+
+.pendente { 
+    background-color: rgba(241, 196, 15, 0.2); 
+    color: #f1c40f; 
+}
