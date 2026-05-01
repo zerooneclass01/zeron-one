@@ -35,9 +35,15 @@
       </div>
 
       <div class="aluno-card-suffix">
-        <span class="status-badge" [ngClass]="aluno.ativo ? 'active' : 'inactive'">
-          {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
-        </span>
+        <div class="status-wrapper">
+          <!-- Exibição Estática ou com Clique para Alternar -->
+          <span class="status-badge" [ngClass]="aluno.ativo ? 'active' : 'inactive'" (click)="toggleStatus(aluno);$event.stopPropagation()">
+
+            <span class="dot"></span>
+            {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
+
+          </span>
+        </div>
 
         <div class="finance-preview-mini">
           <span class="value">{{ aluno.valorMensalidade | currency:'BRL' }}</span>

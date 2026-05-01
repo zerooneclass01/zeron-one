@@ -46,4 +46,8 @@ export class AlunoService {
   vincularTurma(alunoId: string, turmaId: string): Observable<any> {
     return this.http.post(`${this.API}/VinculaTurmaAluno/${alunoId}/${turmaId}`, {});
   }
+
+  ativarDesativar(id: string, status: boolean): Observable<any> {
+  return this.http.patch(`${this.API}/Ativa/${id}`, status);
+}
 }

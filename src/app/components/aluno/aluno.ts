@@ -12,13 +12,13 @@ import { AlunoDetalhes } from '../aluno-detalhes/aluno-detalhes';
 @Component({
   selector: 'app-aluno',
   standalone: true,
-  imports: [CommonModule, FormsModule,AlunoCadastroComponent],
+  imports: [CommonModule, FormsModule, AlunoCadastroComponent],
   templateUrl: './aluno.html',
   styleUrls: ['./aluno.css']
 })
 export class AlunoComponent implements OnInit {
   alunos: Aluno[] = [];
-  responser: AlunoResponser []=[];
+  responser: AlunoResponser[] = [];
   alunosFiltrados: AlunoResponser[] = [];
   turmas: any[] = []; // Lista de turmas para o select
   filtro: string = '';
@@ -108,6 +108,25 @@ export class AlunoComponent implements OnInit {
       diaVencimento: 10,
       turmaId: null
     };
+  }
+
+  toggleStatus(aluno: any): void {
+    // Invertemos o status localmente
+    const statusOriginal = aluno.ativo;
+    aluno.ativo = !aluno.ativo;
+
+    // Enviamos para o servidor (usando o serviço que criamos antes)
+    this.alunoService.ativarDesativar(aluno.id, aluno.ativo).subscribe({
+      next: () => {
+        // Sucesso: Não fazemos nada, o visual já mudou!
+        console.log('Status sincronizado com sucesso.');
+      },
+      error: (err) => {
+        // Erro: Revertemos o valor para o que estava antes
+        aluno.ativo = statusOriginal;
+        console.error('Erro ao atualizar status, revertendo visual...', err);
+      }
+    });
   }
 
   verDetalhes(id: string | undefined) {
