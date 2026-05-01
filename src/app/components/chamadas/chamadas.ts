@@ -195,11 +195,13 @@ export class ChamadaComponent implements OnInit {
       next: () => {
         this.carregando = false;
         alert("Chamada atualizada com sucesso!");
+        this.cdRef.detectChanges();
       },
       error: (err) => {
         this.carregando = false;
         console.error("Erro na API:", err);
         alert("Erro ao atualizar.");
+        this.cdRef.detectChanges();
       }
     });
   }

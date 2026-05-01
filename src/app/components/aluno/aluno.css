@@ -74,17 +74,55 @@
 
 .aluno-card-suffix { display: flex; align-items: center; gap: 1.5rem; }
 
-/* Status Badges */
+/* --- Novo Botão de Status (Estilo Dark Neon) --- */
+
 .status-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  /* Reseta estilos de botão/badge para o novo visual */
+  background-color: #1a1a1a; /* Fundo escuro para contrastar no card */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 25px;
+  border-radius: 20px; /* Bordas arredondadas da imagem */
+  font-size: 14px;
   font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  min-width: 100px;
   border: 1px solid transparent;
 }
-.status-badge.active { color: #28a745; border-color: #28a745; background: rgba(40,167,69,0.1); }
-.status-badge.inactive { color: #e50914; border-color: #e50914; background: rgba(229,9,20,0.1); }
 
+/* Quando o Aluno está ATIVO (Verde Neon) */
+.status-badge.active {
+  color: #2eb85c; /* Verde neon do texto */
+  border: 1px solid #2eb85c; /* Contorno verde */
+  background-color: #1a1a1a;
+}
+
+/* Quando o Aluno está INATIVO (Vermelho Neon para manter o padrão) */
+.status-badge.inactive {
+  color: #e55353;
+  border: 1px solid #e55353;
+  background-color: #1a1a1a;
+}
+
+/* Efeito de Hover (Brilho suave ao passar o mouse) */
+.status-badge:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 10px rgba(46, 184, 92, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Efeito de clique (Feedback tátil) */
+.status-badge:active {
+  transform: scale(0.95);
+}
+
+/* Removemos o .dot antigo pois o novo design não utiliza o ponto indicador */
+.dot {
+  display: none;
+}
 .arrow-icon { color: #444; }
 
 /* --- MEDIA QUERY: Celular --- */
