@@ -1,33 +1,39 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
-import { Router, RouterModule } from '@angular/router'; // Adicione o Router aqui
-
-@Component({
+import { Component, signal, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common'; // Importação essencial
+import { Router, RouterModule } from '@angular/router';@Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [RouterModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class Dashboard {
-  constructor(private router: Router) { } // Injete o roteador
 
-   userRole = signal<number | null>(null);
+export class Dashboard implements OnInit {
+  // 1. Injete o PLATFORM_ID para identificar onde o código está rodando
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
+
+  userRole = signal<number | null>(null);
 
   ngOnInit() {
-    // Busca o role salvo no login
-    const role = localStorage.getItem('user_role');
-    this.userRole.set(role !== null ? Number(role) : null);
+    // 2. Só execute a lógica de localStorage se estiver no Browser
+    if (isPlatformBrowser(this.platformId)) {
+      const role = localStorage.getItem('user_role');
+      this.userRole.set(role !== null ? Number(role) : null);
+    }
   }
 
-  podeAcessarAdministrativoERh() { 
-    return this.userRole() === 0 || this.userRole() === 1; 
+  podeAcessarAdministrativoERh() {
+    return this.userRole() === 0 || this.userRole() === 1;
   }
 
-  podeAcessarFinanceiroRecepicao() { 
+  podeAcessarFinanceiroRecepicao() {
     return this.userRole() == 2; // Professor (3) não entra
   }
 
-  podeAcessarProfessores() { 
+  podeAcessarProfessores() {
     return this.userRole() == 3; // Professor (3) não entra
   }
 
@@ -40,23 +46,23 @@ export class Dashboard {
     this.router.navigate(['/professor']);
   }
 
-  irParaUsuario(){
+  irParaUsuario() {
     this.router.navigate(['../usuario'])
   }
 
-  irParaFinanceiro(){
+  irParaFinanceiro() {
     this.router.navigate(['/financeiro'])
   }
 
-  irParaTurma(){
+  irParaTurma() {
     this.router.navigate(['/turma'])
   }
 
-  irParaChamadas(){
+  irParaChamadas() {
     this.router.navigate(['/chamadas'])
   }
- 
-  irParaRanking(){
+
+  irParaRanking() {
     this.router.navigate(['../ranking'])
   }
 }
