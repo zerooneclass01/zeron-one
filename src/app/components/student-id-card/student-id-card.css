@@ -1,0 +1,121 @@
+/* --- CONFIGURAÇÃO DA PÁGINA DE IMPRESSÃO --- */
+@page {
+  size: A4;
+  margin: 0; /* Remove data/hora e título do navegador */
+}
+
+@media print {
+  /* Esconde TUDO do sistema (fundo, botões, cards de pagamento) */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Mostra APENAS o container da carteirinha */
+  .print-only-container, 
+  .print-only-container * {
+    visibility: visible !important;
+  }
+
+  .print-only-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza Horizontal */
+    justify-content: center; /* Centraliza Vertical */
+    gap: 15mm; /* Espaço entre frente e verso */
+    background: white !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+}
+
+/* --- DESIGN PREMIUM (AZUL E VERMELHO) --- */
+.card {
+  width: 85.6mm;
+  height: 53.98mm;
+  background-color: #001f3f !important; /* Azul Marinho Profundo */
+  border: 1mm solid #e63946 !important; /* Borda Vermelha Vibrante */
+  border-radius: 4mm;
+  padding: 4mm;
+  box-sizing: border-box;
+  color: white !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.inner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  width: 32mm;
+  margin-bottom: 2mm;
+  filter: brightness(0) invert(1); /* Logo Branca */
+}
+
+.student-name {
+  font-size: 13pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 0 0 1mm 0;
+  letter-spacing: 0.5mm;
+}
+
+.role-label {
+  font-size: 7pt;
+  background-color: #e63946 !important;
+  padding: 1mm 5mm;
+  border-radius: 50px;
+  font-weight: bold;
+}
+
+.data-section {
+  width: 80%;
+  margin-bottom: 3mm;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9pt;
+  border-bottom: 0.1mm solid rgba(255, 255, 255, 0.2);
+  padding: 1mm 0;
+}
+
+.qr-code {
+  width: 16mm;
+  height: 16mm;
+  background: white !important;
+  padding: 1mm;
+  border-radius: 1mm;
+}
+
+.id-text {
+  font-size: 6pt;
+  color: #e63946 !important;
+  font-weight: bold;
+  margin-top: 1mm;
+}
+
+.system-footer {
+  position: absolute;
+  bottom: 2mm;
+  font-size: 5pt;
+  color: rgba(255, 255, 255, 0.4);
+}

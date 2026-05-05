@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef,ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,14 +10,20 @@ import { AlunoResponser } from '../../models/AlunoResponser.model';
 import { Mensalidade } from '../../models/finaceiro.model';
 import { AlunoAtualizar } from '../aluno-atualizar/aluno-atualizar';
 
+
+import { StudentIdCardComponent} from '../student-id-card/student-id-card';
+
+
+
 @Component({
   selector: 'app-aluno-detalhes',
   standalone: true,
-  imports: [CommonModule, FormsModule, AlunoAtualizar],
+  imports: [CommonModule, FormsModule, AlunoAtualizar,StudentIdCardComponent],
   templateUrl: './aluno-detalhes.html',
   styleUrl: './aluno-detalhes.css',
 })
 export class AlunoDetalhes implements OnInit {
+  @ViewChild('printer') printer!: StudentIdCardComponent;
   // Centralizamos tudo no 'response' para evitar conflitos de tipos
   response: AlunoResponser | null = null;
   alunoEdicao: any = {};
@@ -151,5 +157,12 @@ export class AlunoDetalhes implements OnInit {
 
   trackByMensalidadeId(index: number, item: Mensalidade): string {
     return item.id;
+  }
+
+  imprimirCarteirinha(): void {
+    if (this.response) {
+      // O comando window.print() acionará o CSS @media print que configuramos
+      window.print();
+    }
   }
 }

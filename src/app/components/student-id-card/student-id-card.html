@@ -1,0 +1,35 @@
+<div class="print-only-container" *ngIf="aluno">
+  
+  <div class="card front">
+    <div class="inner-content">
+      <img src="../../../assets/logo.png" alt="Logo ZeroOne" class="logo">
+      <h2 class="student-name">{{ aluno.nome }}</h2>
+      <div class="role-label">STUDENT / ALUNO</div>
+    </div>
+  </div>
+
+  <div class="card back">
+    <div class="inner-content">
+      <div class="data-section">
+        <div class="data-row">
+          <span>MATRÍCULA:</span>
+          <strong>{{ aluno.matricula }}</strong>
+        </div>
+        <div class="data-row">
+          <span>IDADE:</span>
+          <strong>{{ aluno.idade }} ANOS</strong>
+        </div>
+      </div>
+
+      <div class="qr-section">
+        <img [src]="qrCodeIdOnly" alt="QR Code" class="qr-code">
+        <p class="id-text">ID: {{ aluno.id }}</p>
+      </div>
+
+      <div class="system-footer">
+        Zero One English Conversation
+      </div>
+    </div>
+  </div>
+
+</div>

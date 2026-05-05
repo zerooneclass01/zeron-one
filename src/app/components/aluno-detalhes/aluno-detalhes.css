@@ -10,6 +10,38 @@
   border-radius: 12px !important;
 }
 
+.btn-carterinha {
+  background-color: #e63946 !important; /* Vermelho vibrante do seu tema */
+  color: white !important;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  box-shadow: 0 4px 10px rgba(230, 57, 70, 0.3);
+}
+
+.btn-carterinha:hover {
+  background-color: #c12a36 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(230, 57, 70, 0.4);
+}
+
+.btn-carterinha i {
+  font-size: 1rem;
+}
+
+/* Garante que o botão NÃO apareça na impressão */
+@media print {
+  .btn-carterinha, .btn-voltar, .btn-warning {
+    display: none !important;
+  }
+}
 /* Cards de Status (Financeiro) */
 .card-status {
   background-color: #121212;

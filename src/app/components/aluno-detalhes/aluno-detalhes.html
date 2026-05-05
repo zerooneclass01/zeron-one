@@ -29,6 +29,9 @@
           <span class="d-none d-md-inline">•</span>
           <span>{{ response.telefone }}</span>
         </p>
+        <button class="btn btn-danger btn-sm rounded-pill fw-bold mt-2 shadow-sm" (click)="imprimirCarteirinha()">
+          <i class="bi bi-person-badge me-1"></i> Carteirinha
+        </button>
       </div>
     </div>
   </div>
@@ -102,3 +105,5 @@
     <div class="spinner-border text-danger" role="status"></div>
   </div>
 </ng-template>
+<app-student-id-card #printer [aluno]="response ?? undefined">
+</app-student-id-card>
