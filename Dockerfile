@@ -1,32 +1,31 @@
-# Estágio 1: Build 
-# Alterado para Node 18 (mais estável para Angular moderno)
-FROM node:18-alpine as build
+# Estágio 1: Build
+# Usando Node 20 LTS para garantir compatibilidade total
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copia arquivos de configuração primeiro
-COPY package*.json ./
+# Copia arquivos de configuração
+COPY package.json package-lock.json ./
 
-# Instala dependências (npm ci é melhor para CI/CD)
-RUN npm ci
+# Instala dependências usando flags de compatibilidade
+RUN npm install --legacy-peer-deps
 
-# Copia todo o projeto
+# Copia todo o código fonte
 COPY . .
 
-# Aumentamos a memória do Node para evitar o erro status 3
-# O comando 'ng build' é chamado diretamente
+# Comando de Build com npx e aumento de memória
+# O npx garante que o Angular CLI local seja usado
 RUN node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration production
 
-# Estágio 2: Produção
+# Estágio 2: Produção (Servidor Nginx)
 FROM nginx:1.23.0-alpine
 
 EXPOSE 8080
 
-# Copia o seu nginx.conf corrigido
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# IMPORTANTE: Verifique se o nome da pasta em dist é 'zeron-one' ou 'zero-one'
-# Se o build falhar aqui, mude o nome da pasta abaixo
+# IMPORTANTE: No seu VS Code vi "ZERON-ONE". 
+# Verifique se a pasta em dist/ é exatamente 'zeron-one'
 COPY --from=build /app/dist/zeron-one /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
