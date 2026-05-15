@@ -1,32 +1,27 @@
 # Estágio 1: Build
 FROM node:20-alpine AS build
-
 WORKDIR /app
 
-# Instala ferramentas básicas de edição de texto (sed)
+# Instala ferramentas e limpa cache do npm
 RUN apk add --no-cache sed
-
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 COPY . .
 
-# --- O PULO DO GATO ---
-# Esse comando substitui "server" por "static" dentro do angular.json via linha de comando
-# Isso remove a exigência do "ssr.entry" que está quebrando o seu build
+# Engenharia Reversa: Forçamos o angular.json a ser estático E desativamos Prerender/SSR
+# O sed limpa a configuração de servidor, e as flags no build garantem o sucesso.
 RUN sed -i 's/"outputMode": "server"/"outputMode": "static"/g' angular.json
 
-# Agora o build vai rodar sem procurar por arquivos de servidor
-RUN ./node_modules/.bin/ng build --configuration production
+# O segredo está nestas 3 flags: --prerender false --ssr false --output-path
+RUN ./node_modules/.bin/ng build --configuration production --prerender false --ssr false
 
 # Estágio 2: Produção
 FROM nginx:1.23.0-alpine
-
 EXPOSE 8080
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Verificação de pasta: no modo static, o Angular costuma colocar em /dist/zeron-one
-# Se o deploy falhar nesta linha, tente remover o /browser do final
+# Como forçamos o modo static, os arquivos estarão nesta pasta:
 COPY --from=build /app/dist/zeron-one/browser /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
