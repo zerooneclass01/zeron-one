@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Executa o build (Aumentamos a memória e usamos o npx para maior estabilidade)
-RUN node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration production
+RUN node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration production --no-prerender --no-ssr
 
 # Estágio 2: Produção
 FROM nginx:1.23.0-alpine
