@@ -1,31 +1,32 @@
-# Estágio 1: Build (Agrupando comandos para reduzir camadas)
-FROM node:16-alpine3.16 as build
+# Estágio 1: Build 
+# Alterado para Node 18 (mais estável para Angular moderno)
+FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Copia apenas os arquivos de dependências primeiro (otimiza o cache do Docker)
+# Copia arquivos de configuração primeiro
 COPY package*.json ./
+
+# Instala dependências (npm ci é melhor para CI/CD)
 RUN npm ci
 
-# Copia o restante dos arquivos
+# Copia todo o projeto
 COPY . .
 
-# Executa o build. 
-# IMPORTANTE: Verifique se o nome da pasta gerada em /dist é exatamente 'zeron-one'
-RUN npm run build -- --output-hashing=all
+# Aumentamos a memória do Node para evitar o erro status 3
+# O comando 'ng build' é chamado diretamente
+RUN node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration production
 
-# Estágio 2: Produção (Servidor Nginx)
+# Estágio 2: Produção
 FROM nginx:1.23.0-alpine
 
-# Configuração de porta para o Cloud Run
 EXPOSE 8080
 
-# Copia a configuração do Nginx que você já corrigiu
+# Copia o seu nginx.conf corrigido
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copia os arquivos compilados do estágio anterior
-# DICA: Se der erro de "folder not found", verifique o nome da pasta dentro de /dist
+# IMPORTANTE: Verifique se o nome da pasta em dist é 'zeron-one' ou 'zero-one'
+# Se o build falhar aqui, mude o nome da pasta abaixo
 COPY --from=build /app/dist/zeron-one /usr/share/nginx/html
 
-# Comando para iniciar o Nginx
 CMD ["nginx", "-g", "daemon off;"]
