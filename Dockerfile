@@ -3,25 +3,29 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copia apenas os arquivos de configuração
+# 1. Copia dependências
 COPY package*.json ./
-
-# Instala as dependências (ignora conflitos de versão que causam erro 1)
 RUN npm install --legacy-peer-deps
 
-# Copia o resto do código
+# 2. Copia o código fonte
 COPY . .
 
-# Executa o build (Aumentamos a memória e usamos o npx para maior estabilidade)
-RUN node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration production --no-prerender --no-ssr
+# 3. Build simplificado (o Angular lerá as configurações do seu angular.json)
+# Removi as flags que causaram o erro 127
+RUN ./node_modules/.bin/ng build --configuration production
 
 # Estágio 2: Produção
 FROM nginx:1.23.0-alpine
+
+# Porta para o Cloud Run
 EXPOSE 8080
+
+# Configuração do Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# IMPORTANTE: Verifique se a pasta em dist/ é exatamente 'zeron-one'
-# Se o erro persistir aqui, tente mudar para /app/dist/
-COPY --from=build /app/dist/zeron-one /usr/share/nginx/html
+# 4. AJUSTE DE CAMINHO (Ponto Crítico)
+# Em versões novas do Angular, os arquivos ficam em: /dist/nome-do-projeto/browser
+# Se o build der erro de "folder not found" nesta linha, mude para: /app/dist/zeron-one
+COPY --from=build /app/dist/zeron-one/browser /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
