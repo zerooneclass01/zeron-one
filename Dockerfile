@@ -1,17 +1,13 @@
-# Estágio 1: Build
-FROM node:22-alpine AS build
+FROM node:16-alpine3.16 as build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build -- --configuration production
+COPY ./package*.json ./
 
-# Estágio 2: Runtime
-FROM nginx:stable-alpine
-# Copia o seu config customizado para o Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-# Copia o build (ajuste o caminho da dist/ conforme seu projeto)
-COPY --from=build /app/dist/seu-projeto/browser /usr/share/nginx/html
+RUN npm ci
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+COPY ./ ./
+RUN npm run build --output-hashing=all
+
+FROM nginx:1.23.0-alpine
+EXPOSE 8080
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/dist/zeron-one  /usr/share/nginx/html
