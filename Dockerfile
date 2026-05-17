@@ -26,23 +26,29 @@ RUN if [ -f angular.json ]; then \
             .projects["zeron-one"].architect.build.options.outputMode = "static"' angular.json > tmp.json && mv tmp.json angular.json; \
     fi
 
-# Executa o build (gera os arquivos em /app/dist/zeron-one)
+# Executa o build (gera os arquivos)
 RUN npx ng build --configuration production
 
+# Estágio 2: Produção com Nginx
 FROM nginx:1.23.0-alpine
 EXPOSE 8080
 
-# --- O PULO DO GATO ---
-# 1. Remove a configuração padrão do Nginx Alpine para ele não te ignorar
+# Remove a configuração padrão do Nginx Alpine para evitar conflitos
 RUN rm /etc/nginx/conf.d/default.conf || true
 
-# 2. Copia o seu arquivo nginx.conf customizado
+# Copia o seu arquivo nginx.conf customizado
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# 3. Garante que a pasta padrão está limpa e criada
+# Limpa e garante a existência da pasta destino
 RUN rm -rf /usr/share/nginx/html/* && mkdir -p /usr/share/nginx/html
 
-# 4. Copia os arquivos gerados no estágio "build" para o Nginx
+# --- CORREÇÃO DO COPIADOR CROWD-SAFETY ---
+# Copia o conteúdo tentando pegar da pasta raiz do projeto OU de dentro da subpasta browser (se ela existir)
 COPY --from=build /app/dist/zeron-one/ /usr/share/nginx/html/
+RUN if [ -d /usr/share/nginx/html/browser ]; then cp -r /usr/share/nginx/html/browser/* /usr/share/nginx/html/ && rm -rf /usr/share/nginx/html/browser; fi
+
+# --- CORREÇÃO DE PERMISSÃO (FIM DO 403) ---
+# Garante que o Nginx tenha direito de ler a pasta e todos os arquivos do Angular
+RUN chmod -R 755 /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
