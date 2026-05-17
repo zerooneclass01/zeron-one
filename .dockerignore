@@ -1,22 +1,6 @@
-# Dependências locais (O build vai instalar as dele dentro do container)
 node_modules
-npm-debug.log
-
-# Arquivos de infraestrutura que não precisam ir para a imagem final
-Dockerfile*
-docker-compose*
-.dockerignore
-
-# Git e Configurações de Editor
+.angular
+dist
 .git
 .gitignore
-.vscode
-.editorconfig
-
-# Documentação e Logs
 README.md
-LICENSE
-*.log
-
-# Pasta de build local (O Docker vai gerar a própria pasta /dist lá dentro)
-dist

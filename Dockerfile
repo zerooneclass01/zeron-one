@@ -2,33 +2,30 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Instala dependências
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
+# Injeta limite de memória para o Node não travar o Cloud Build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Copia o código
+# Instala dependências aproveitando o cache de camadas do Docker
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps
+
+# Copia o código (Garante que você tem o .dockerignore para não levar o node_modules local!)
 COPY . .
 
-# --- AÇÃO DE ENGENHARIA CRÍTICA ---
-# Removemos os arquivos de servidor e prerender para que o compilador 
-# não tenha outra opção a não ser fazer um build 100% estático.
+# Remove arquivos de servidor para garantir build estático
 RUN rm -f src/main.server.ts src/server.ts
 
-# Build forçando a desativação de tudo que é SSR
-RUN ./node_modules/.bin/ng build --configuration production --ssr false --prerender false
+# Build utilizando o binário global do ambiente ou npx (evita caminhos relativos quebrados)
+RUN npx ng build --configuration production --ssr false --prerender false
 
 # Estágio 2: Produção com Nginx
 FROM nginx:1.23.0-alpine
 EXPOSE 8080
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# O Angular colocará os arquivos em /browser. Vamos copiar com segurança.
 RUN mkdir -p /usr/share/nginx/html
-COPY --from=build /app/dist/zeron-one /tmp/build/
-RUN if [ -d "/tmp/build/browser" ]; then \
-        cp -r /tmp/build/browser/* /usr/share/nginx/html/; \
-    else \
-        cp -r /tmp/build/* /usr/share/nginx/html/; \
-    fi
+
+# Ajuste dinâmico: procura a pasta 'browser' dentro de QUALQUER subpasta gerada em dist/
+RUN cp -r /app/dist/*/browser/* /usr/share/nginx/html/ || cp -r /app/dist/*/* /usr/share/nginx/html/ || cp -r /app/dist/* /usr/share/nginx/html/
 
 CMD ["nginx", "-g", "daemon off;"]
