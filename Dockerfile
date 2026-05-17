@@ -2,6 +2,9 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
+# Instala o 'jq' para limpar o JSON de forma cirúrgica
+RUN apk add --no-cache jq
+
 # Injeta limite de memória para o Node
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
@@ -9,16 +12,23 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 
-# Copia o código completo original
+# Copia o código completo original (restaurando seus arquivos originais)
 COPY . .
 
-# --- FORÇAR MODO CLIENTE EM TODAS AS ROTAS (Bypass definitivo do Prerender) ---
-# Reescrevemos o arquivo de rotas do servidor para dizer explicitamente ao Angular: 
-# "Não importa a rota, renderize apenas no Client (Navegador)".
-RUN mkdir -p src/app && echo 'import { RenderMode } from "@angular/ssr"; export const serverRoutes = [{ path: "**", renderMode: RenderMode.Client }]; export default serverRoutes;' > src/app/app.routes.server.ts || true
-RUN mkdir -p src/app && echo 'import { RenderMode } from "@angular/ssr"; export const serverRoutes = [{ path: "**", renderMode: RenderMode.Client }]; export default serverRoutes;' > src/app/server.routes.ts || true
+# --- DESATIVAÇÃO DA CAMADA DE SERVIDOR NO ANGULAR.JSON ---
+# Removemos a referência ao arquivo 'server' e desativamos o output do ecossistema SSR.
+# Isso faz o Angular buildar puramente como Single Page Application (SPA).
+RUN if [ -f angular.json ]; then \
+        jq 'del(.projects["zeron-one"].architect.build.options.server, \
+                .projects["zeron-one"].architect.build.options.ssr, \
+                .projects["zeron-one"].architect.build.options.prerender, \
+                .projects["zeron-one"].architect.build.configurations.production.server, \
+                .projects["zeron-one"].architect.build.configurations.production.ssr, \
+                .projects["zeron-one"].architect.build.configurations.production.prerender) | \
+            .projects["zeron-one"].architect.build.options.outputMode = "static"' angular.json > tmp.json && mv tmp.json angular.json; \
+    fi
 
-# Executa o build clássico
+# Executa o build clássico focado no navegador
 RUN npx ng build --configuration production
 
 # Estágio 2: Produção com Nginx
