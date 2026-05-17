@@ -12,13 +12,13 @@ RUN npm ci --legacy-peer-deps
 # Copia o código completo
 COPY . .
 
-# --- DESATIVAÇÃO COMPLETA DO PRERENDER DE ROTAS ---
-# Sobrescreve os arquivos que forçam o prerender no servidor para arrays vazios.
-# Isso impede que o compilador tente adivinhar os parâmetros de :id.
-RUN echo "export default [];" > src/app/app.routes.server.ts 2>/dev/null || true
-RUN echo "export const serverRoutes = [];" > src/app/server.routes.ts 2>/dev/null || true
+# --- FIX ANGLING COMPILER (PRERENDER BYPASS) ---
+# Satisfez a importação do app.config.server.ts exportando 'serverRoutes' vazio.
+# Isso engana o compilador e desativa o prerender de rotas com parâmetros (:id).
+RUN echo "export const serverRoutes = []; export default serverRoutes;" > src/app/app.routes.server.ts || true
+RUN echo "export const serverRoutes = []; export default serverRoutes;" > src/app/server.routes.ts || true
 
-# Executa o build puro focado no navegador
+# Executa o build de produção
 RUN npx ng build --configuration production
 
 # Estágio 2: Produção com Nginx
