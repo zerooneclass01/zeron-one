@@ -5,21 +5,21 @@ WORKDIR /app
 # Injeta limite de memória para o Node
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Instala dependências aproveitando o cache
+# Instala dependências aproveitando o cache do Docker
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 
-# Copia o código completo
+# Copia o código completo original (sem alterar nenhum arquivo .ts)
 COPY . .
 
-# --- FIX ANGLING COMPILER (PRERENDER BYPASS) ---
-# Satisfez a importação do app.config.server.ts exportando 'serverRoutes' vazio.
-# Isso engana o compilador e desativa o prerender de rotas com parâmetros (:id).
-RUN echo "export const serverRoutes = []; export default serverRoutes;" > src/app/app.routes.server.ts || true
-RUN echo "export const serverRoutes = []; export default serverRoutes;" > src/app/server.routes.ts || true
-
-# Executa o build de produção
-RUN npx ng build --configuration production
+# --- O PULO DO GATO ---
+# Forçamos o Angular CLI a buildar estritamente para o navegador (SPA), 
+# desativando SSR, Prerender e forçando o output clássico que o Nginx precisa.
+RUN npx ng build --configuration production \
+    --ssr false \
+    --prerender false \
+    --output-mode static \
+    --optimization true
 
 # Estágio 2: Produção com Nginx
 FROM nginx:1.23.0-alpine
@@ -28,7 +28,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN mkdir -p /usr/share/nginx/html
 
-# Copia os arquivos gerados para a pasta do Nginx
+# Copia os arquivos gerados com segurança
 RUN cp -r /app/dist/*/browser/* /usr/share/nginx/html/ || cp -r /app/dist/*/* /usr/share/nginx/html/ || cp -r /app/dist/* /usr/share/nginx/html/
 
 CMD ["nginx", "-g", "daemon off;"]
