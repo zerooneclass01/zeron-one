@@ -2,9 +2,6 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Instala o 'jq' para limpar o JSON
-RUN apk add --no-cache jq
-
 # Injeta limite de memória para o Node
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
@@ -15,19 +12,13 @@ RUN npm ci --legacy-peer-deps
 # Copia o código completo original
 COPY . .
 
-# --- EXTINÇÃO TOTAL DO ECOSSISTEMA SSR ---
-# Removemos todas as chaves de ssr, prerender e server de qualquer lugar do angular.json
-# Isso força o Angular a se comportar como uma SPA antiga e puramente Client-Side.
-RUN if [ -f angular.json ]; then \
-        jq 'del(.projects[].architect.build.options.ssr, \
-                .projects[].architect.build.options.prerender, \
-                .projects[].architect.build.configurations.production.ssr, \
-                .projects[].architect.build.configurations.production.prerender, \
-                .projects[].architect.build.configurations.production.server, \
-                .projects[].architect.server)' angular.json > tmp.json && mv tmp.json angular.json; \
-    fi
+# --- FORÇAR MODO CLIENTE EM TODAS AS ROTAS (Bypass definitivo do Prerender) ---
+# Reescrevemos o arquivo de rotas do servidor para dizer explicitamente ao Angular: 
+# "Não importa a rota, renderize apenas no Client (Navegador)".
+RUN mkdir -p src/app && echo 'import { RenderMode } from "@angular/ssr"; export const serverRoutes = [{ path: "**", renderMode: RenderMode.Client }]; export default serverRoutes;' > src/app/app.routes.server.ts || true
+RUN mkdir -p src/app && echo 'import { RenderMode } from "@angular/ssr"; export const serverRoutes = [{ path: "**", renderMode: RenderMode.Client }]; export default serverRoutes;' > src/app/server.routes.ts || true
 
-# Executa o build que agora só conhece o navegador
+# Executa o build clássico
 RUN npx ng build --configuration production
 
 # Estágio 2: Produção com Nginx
