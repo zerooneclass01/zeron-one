@@ -26,7 +26,7 @@ RUN if [ -f angular.json ]; then \
             .projects["zeron-one"].architect.build.options.outputMode = "static"' angular.json > tmp.json && mv tmp.json angular.json; \
     fi
 
-# Executa o build que já sabemos que funciona perfeitamente
+# Executa o build (gera os arquivos em /app/dist/zeron-one)
 RUN npx ng build --configuration production
 
 # Estágio 2: Produção com Nginx
@@ -34,9 +34,10 @@ FROM nginx:1.23.0-alpine
 EXPOSE 8080
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# Cria a pasta do HTML do Nginx se não existir
 RUN mkdir -p /usr/share/nginx/html
 
-# Alvo certeiro: copia direto da pasta onde o Angular gerou os arquivos
-RUN cp -r /app/dist/zeron-one/* /usr/share/nginx/html/
+# AQUI ESTÁ O SEGREDO: Copia os arquivos gerados no estágio "build" para o Nginx
+COPY --from=build /app/dist/zeron-one/ /usr/share/nginx/html/
 
 CMD ["nginx", "-g", "daemon off;"]
