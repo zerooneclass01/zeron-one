@@ -12,8 +12,14 @@ RUN npm ci --legacy-peer-deps
 # Copia o código completo
 COPY . .
 
-# Build forçando o modo static que o Angular solicitou e desligando SSR/Prerender
-RUN npx ng build --configuration production --output-mode static --ssr false --prerender false
+# --- DESATIVAÇÃO COMPLETA DO PRERENDER DE ROTAS ---
+# Sobrescreve os arquivos que forçam o prerender no servidor para arrays vazios.
+# Isso impede que o compilador tente adivinhar os parâmetros de :id.
+RUN echo "export default [];" > src/app/app.routes.server.ts 2>/dev/null || true
+RUN echo "export const serverRoutes = [];" > src/app/server.routes.ts 2>/dev/null || true
+
+# Executa o build puro focado no navegador
+RUN npx ng build --configuration production
 
 # Estágio 2: Produção com Nginx
 FROM nginx:1.23.0-alpine
@@ -22,7 +28,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN mkdir -p /usr/share/nginx/html
 
-# Copia os arquivos estáticos gerados para a pasta do Nginx
+# Copia os arquivos gerados para a pasta do Nginx
 RUN cp -r /app/dist/*/browser/* /usr/share/nginx/html/ || cp -r /app/dist/*/* /usr/share/nginx/html/ || cp -r /app/dist/* /usr/share/nginx/html/
 
 CMD ["nginx", "-g", "daemon off;"]
