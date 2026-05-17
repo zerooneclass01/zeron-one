@@ -2,7 +2,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Instala o 'jq' para podermos alterar o angular.json com precisão
+# Instala o 'jq' para limpar o JSON
 RUN apk add --no-cache jq
 
 # Injeta limite de memória para o Node
@@ -15,13 +15,19 @@ RUN npm ci --legacy-peer-deps
 # Copia o código completo original
 COPY . .
 
-# --- DESTRUIÇÃO CIRÚRGICA DO SSR PARA O PROJETO ZERON-ONE ---
-# Modificamos diretamente o bloco de produção do seu projeto tirando os gatilhos de servidor
+# --- EXTINÇÃO TOTAL DO ECOSSISTEMA SSR ---
+# Removemos todas as chaves de ssr, prerender e server de qualquer lugar do angular.json
+# Isso força o Angular a se comportar como uma SPA antiga e puramente Client-Side.
 RUN if [ -f angular.json ]; then \
-        jq '.projects["zeron-one"].architect.build.configurations.production |= del(.ssr, .prerender, .server, .outputMode)' angular.json > tmp.json && mv tmp.json angular.json; \
+        jq 'del(.projects[].architect.build.options.ssr, \
+                .projects[].architect.build.options.prerender, \
+                .projects[].architect.build.configurations.production.ssr, \
+                .projects[].architect.build.configurations.production.prerender, \
+                .projects[].architect.build.configurations.production.server, \
+                .projects[].architect.server)' angular.json > tmp.json && mv tmp.json angular.json; \
     fi
 
-# Agora o build roda limpo como uma Single Page Application (SPA) clássica
+# Executa o build que agora só conhece o navegador
 RUN npx ng build --configuration production
 
 # Estágio 2: Produção com Nginx
