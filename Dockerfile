@@ -12,8 +12,8 @@ RUN npm ci --legacy-peer-deps
 # Copia o código completo (sem apagar os arquivos .ts do server)
 COPY . .
 
-# Build forçando apenas a geração do bundle do navegador (Client-Side Only)
-RUN npx ng build --configuration production --no-ssr --no-prerender
+# Build desativando explicitamente o prerender e o mapeamento de rotas do servidor
+RUN npx ng build --configuration production --prerender false --ssr false --output-mode browser
 
 # Estágio 2: Produção com Nginx
 FROM nginx:1.23.0-alpine
