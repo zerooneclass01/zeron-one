@@ -35,7 +35,6 @@ export class Dashboard implements OnInit {
       this.userRole.set(null);
     }
     this.router.navigate(['/']);
-    window.location.reload();
   }
 
   podeAcessarAdministrativoERh() {
