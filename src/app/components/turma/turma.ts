@@ -64,7 +64,9 @@ export class TurmaComponent implements OnInit {
 
   carregarProfessores() {
     this.professorService.obterTodos().subscribe({
-      next: (data) => this.professores = data,
+      next: (data) =>{ this.professores = data
+        this.cdRef.detectChanges();
+      },
       error: (err) => console.error("Erro ao carregar professores", err)
     });
   }
