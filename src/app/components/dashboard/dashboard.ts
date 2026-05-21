@@ -32,9 +32,6 @@ export class Dashboard implements OnInit {
   executarLogout() {
     this.authService.logout();
     if (isPlatformBrowser(this.platformId)) {
-
-      localStorage.clear();
-      sessionStorage.clear();
       this.userRole.set(null);
     }
     this.router.navigate(['/']);

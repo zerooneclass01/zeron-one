@@ -40,7 +40,8 @@ export class AuthService {
 
   logout() {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('zero_one_token');
+      localStorage.clear();
+      sessionStorage.clear();
     }
     this.usuarioLogado.set(null);
   }
