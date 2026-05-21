@@ -1,7 +1,7 @@
 import { Component, signal, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common'; 
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../services/AuthService';
-import { Router, RouterModule } from '@angular/router';@Component({
+import { Router, RouterModule } from '@angular/router'; @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [RouterModule],
@@ -30,12 +30,13 @@ export class Dashboard implements OnInit {
   }
 
   executarLogout() {
-    this.authService.logout(); 
-    
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('user_role');
-    }
-    this.router.navigate(['/']); 
+    this.authService.logout();
+    localStorage.clear();
+    sessionStorage.clear();
+
+    localStorage.removeItem('user_role');
+
+    this.router.navigate(['/']);
   }
 
   podeAcessarAdministrativoERh() {
