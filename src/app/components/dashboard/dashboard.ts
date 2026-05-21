@@ -31,11 +31,12 @@ export class Dashboard implements OnInit {
 
   executarLogout() {
     this.authService.logout();
-    localStorage.clear();
-    sessionStorage.clear();
+    if (isPlatformBrowser(this.platformId)) {
 
-    localStorage.removeItem('user_role');
-
+      localStorage.clear();
+      sessionStorage.clear();
+      this.userRole.set(null);
+    }
     this.router.navigate(['/']);
   }
 
