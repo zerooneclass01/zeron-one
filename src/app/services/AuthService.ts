@@ -39,9 +39,8 @@ export class AuthService {
   }
 
   logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.clear();
-      sessionStorage.clear();
+     if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('zero_one_token');
     }
     this.usuarioLogado.set(null);
   }
