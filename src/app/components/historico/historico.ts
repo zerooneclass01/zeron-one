@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AlunoService } from '../../services/aluno'; 
 import { TurmaService } from '../../services/turma'; 
 import { HistoricoAlunoService } from '../../services/historico-aluno';
+import { ProfessorService } from 'src/app/services/professor';
 
 @Component({
   selector: 'app-historico',
@@ -28,9 +29,9 @@ export class HistoricoComponent implements OnInit {
   modoEdicao: boolean = false;
   registroEdicao: any = null;
 
-  // Mock padrão do ID do professor para inserções
-  professorId: string = '3fa85f64-5717-4562-b3fc-2c963f66afa6'; 
-  nomeProfessor: string = 'Eduardo Ferreira';
+  // Propriedades do professor resolvidas dinamicamente
+  professorId!: string;
+  nomeProfessor: string = 'Buscando professor...';
 
   novoRegistro: any = {
     statusDesempenho: 1,
@@ -43,11 +44,11 @@ export class HistoricoComponent implements OnInit {
     private alunoService: AlunoService,
     private turmaService: TurmaService,
     private historicoService: HistoricoAlunoService,
+    private professorService: ProfessorService, // Injetado novamente
     private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    // Captura o id do aluno baseado na sua configuração de rota
     this.alunoId = this.route.snapshot.paramMap.get('alunoId') || '';
     if (this.alunoId) {
       this.carregarDadosDoAluno();
@@ -60,20 +61,58 @@ export class HistoricoComponent implements OnInit {
       next: (alunoDados) => {
         this.aluno = alunoDados;
         
-        // Resolve dinamicamente o nome da turma para não ficar "Sem Turma Assinalada"
+        // Verifica a turma do aluno para encontrar o professor responsável
         if (alunoDados && alunoDados.turmaId) {
           this.turmaService.obterTodas().subscribe({
             next: (turmas) => {
               const turmaEncontrada = turmas.find((t: any) => t.id === alunoDados.turmaId);
-              this.nomeTurmaDoAluno = turmaEncontrada ? turmaEncontrada.nome : 'Sem Turma Assinalada';
+              
+              if (turmaEncontrada) {
+                this.nomeTurmaDoAluno = turmaEncontrada.nome;
+                
+                // Se houver a chave estrangeira do professor, busca os detalhes dele na service
+                if (turmaEncontrada.professorId) {
+                  this.professorId = turmaEncontrada.professorId;
+                  this.carregarNomeDoProfessor(turmaEncontrada.professorId);
+                } else {
+                  this.nomeProfessor = 'Sem Professor Atribuído';
+                }
+              } else {
+                this.nomeTurmaDoAluno = 'Sem Turma Assinalada';
+                this.nomeProfessor = 'Sem Professor Atribuído';
+              }
               this.cdRef.detectChanges();
             },
-            error: () => this.nomeTurmaDoAluno = 'Sem Turma Assinalada'
+            error: () => {
+              this.nomeTurmaDoAluno = 'Sem Turma Assinalada';
+              this.nomeProfessor = 'Erro ao carregar';
+            }
           });
+        } else {
+          this.nomeTurmaDoAluno = 'Sem Turma Assinalada';
+          this.nomeProfessor = 'Sem Professor Atribuído';
         }
         this.cdRef.detectChanges();
       },
       error: (err) => console.error('Erro ao buscar dados do aluno:', err)
+    });
+  }
+
+  // Método que faz a busca do nome do professor usando a Service
+  carregarNomeDoProfessor(profId: string): void {
+    this.professorService.obterPorId(profId).subscribe({
+      next: (profDados) => {
+        if (profDados && profDados.nome) {
+          this.nomeProfessor = profDados.nome;
+        } else {
+          this.nomeProfessor = 'Professor Não Identificado';
+        }
+        this.cdRef.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao buscar dados do professor:', err);
+        this.nomeProfessor = 'Erro ao carregar nome';
+      }
     });
   }
 
@@ -122,12 +161,16 @@ export class HistoricoComponent implements OnInit {
   }
 
   salvarRegistro(): void {
+    if (!this.novoRegistro.descricao || !this.novoRegistro.descricao.trim()) {
+      alert('Por favor, preencha a descrição da avaliação.');
+      return;
+    }
+
     if (this.modoEdicao) {
-      // CORREÇÃO: Enviando apenas os campos editáveis pedidos (status e descrição)
       const modelAtualizar = {
         statusDesempenho: Number(this.novoRegistro.statusDesempenho),
         statusComportamento: Number(this.novoRegistro.statusComportamento),
-        descricao: this.novoRegistro.descricao
+        descricao: this.novoRegistro.descricao.trim()
       };
 
       this.historicoService.atualizarHistorico(this.registroEdicao.id, modelAtualizar).subscribe({
@@ -135,15 +178,18 @@ export class HistoricoComponent implements OnInit {
           this.fecharModal();
           this.carregarHistoricoDaTimeline();
         },
-        error: (err) => console.error('Erro ao atualizar histórico:', err)
+        error: (err) => {
+          console.error('Erro ao atualizar histórico:', err);
+          alert('Não foi possível atualizar o histórico.');
+        }
       });
     } else {
       const modelAdicionar = {
         alunoId: this.alunoId,
-        professorId: this.professorId,
+        professorId: this.professorId, // Envia o ID correto que foi descoberto na turma
         statusDesempenho: Number(this.novoRegistro.statusDesempenho),
         statusComportamento: Number(this.novoRegistro.statusComportamento),
-        descricao: this.novoRegistro.descricao
+        descricao: this.novoRegistro.descricao.trim()
       };
 
       this.historicoService.adicionarHistorico(modelAdicionar).subscribe({
@@ -151,7 +197,10 @@ export class HistoricoComponent implements OnInit {
           this.fecharModal();
           this.carregarHistoricoDaTimeline();
         },
-        error: (err) => console.error('Erro ao adicionar histórico:', err)
+        error: (err) => {
+          console.error('Erro ao adicionar histórico:', err);
+          alert('Erro ao salvar. Verifique se as propriedades no console estão corretas.');
+        }
       });
     }
   }
