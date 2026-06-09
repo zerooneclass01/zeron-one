@@ -12,9 +12,13 @@ import { ChamadaComponent } from './components/chamadas/chamadas';
 import { RelatorioChamada } from './components/chamadas/relatorio-chamada/relatorio-chamada';
 import { PerfilComponent } from './components/usuario/usuario';
 import { RankingComponent } from './components/ranking/ranking';
+import { HistoricoAlunoComponent } from './components/historico-aluno/historico-aluno';
+import { HistoricoComponent } from './components/historico/historico';
 
 // Importe o seu guard aqui (ajuste o caminho se necessário)
 import { authGuard } from '../app/services/auth.guard'; 
+import path from 'path';
+import { Component } from '@angular/core';
 
 export const routes: Routes = [
   // 🔓 ROTA PÚBLICA: Qualquer um pode acessar a tela de login
@@ -45,6 +49,8 @@ export const routes: Routes = [
       { path: 'chamadas', component: ChamadaComponent },
       { path: 'relatorio-chamada/:id', component: RelatorioChamada },
       { path: 'ranking', component: RankingComponent },
+      { path:'historico-aluno',component : HistoricoAlunoComponent},
+      {path: 'historico/:alunoId', component: HistoricoComponent}
     ]
   },
 

@@ -77,4 +77,8 @@ export class Dashboard implements OnInit {
   irParaRanking() {
     this.router.navigate(['../ranking'])
   }
+
+  irParaHistoricoAluno(){
+    this.router.navigate(['../historico-aluno'])
+  }
 }

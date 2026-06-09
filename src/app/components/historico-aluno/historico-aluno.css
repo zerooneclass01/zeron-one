@@ -1,0 +1,305 @@
+/* Configurações Gerais da Tela */
+.alunos-container {
+  padding: 20px;
+  background-color: #0d0d0d;
+  min-height: 100vh;
+  color: #ffffff;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .alunos-container {
+    padding: 30px;
+  }
+}
+
+/* Estrutura do Cabeçalho */
+.timeline-header-block {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0;
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.btn-back:hover {
+  opacity: 0.7;
+}
+
+.header-titles h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.3px;
+}
+
+.header-titles .subtitle {
+  color: #666666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .header-titles h1 {
+    font-size: 2.2rem;
+  }
+  .header-titles .subtitle {
+    font-size: 0.95rem;
+  }
+}
+
+/* Área de Filtros Centralizada */
+.search-section-centered {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 35px;
+}
+
+/* Wrapper que junta a Busca e o Select */
+.filters-wrapper {
+  display: flex;
+  flex-direction: column; /* Vertical no telemóvel */
+  gap: 12px;
+  width: 100%;
+  max-width: 700px; /* Controla o tamanho máximo do bloco central */
+}
+
+/* Lado a lado em tablets e computadores */
+@media (min-width: 600px) {
+  .filters-wrapper {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.search-bar-box {
+  position: relative;
+  flex: 2; /* O campo de texto ocupa mais espaço */
+  width: 100%;
+}
+
+.select-bar-box {
+  flex: 1; /* O select ocupa menos espaço */
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #444444;
+}
+
+/* Input de Texto */
+.input-dark-rounded {
+  width: 100%;
+  background-color: #141414;
+  border: 1px solid #1f1f1f;
+  color: #ffffff;
+  padding: 12px 15px 12px 44px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.input-dark-rounded:focus {
+  border-color: #333333;
+}
+
+/* Dropdown de Seleção de Turma */
+.select-dark-rounded {
+  width: 100%;
+  background-color: #141414;
+  border: 1px solid #1f1f1f;
+  color: #ffffff;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  /* Remove a seta padrão do sistema em alguns browsers para estilizar depois se quiseres */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666666' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 15px) 50%;
+  padding-right: 40px;
+}
+
+.select-dark-rounded:focus {
+  border-color: #333333;
+}
+
+/* Bloco da Lista de Alunos */
+.alunos-list-block {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Linha Individual do Aluno */
+.aluno-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #111111;
+  border-bottom: 1px solid #1f1f1f;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.aluno-row-item:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.aluno-row-item:last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom: none;
+}
+
+.aluno-row-item:hover {
+  background-color: #161616;
+}
+
+/* Estrutura de Informações à Esquerda */
+.left-section-data {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Avatar Circular Vermelho */
+.avatar-red-circle {
+  width: 42px;
+  height: 42px;
+  background-color: #e50914;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .left-section-data {
+    gap: 18px;
+  }
+  .avatar-red-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Detalhes de Texto */
+.text-data-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.aluno-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+  .aluno-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Sub-informações */
+.sub-info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+@media (min-width: 480px) {
+  .sub-info-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+}
+
+.tag-turma-gray {
+  color: #aaaaaa;
+  font-weight: 500;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dot-separator-vertical {
+  display: none;
+  color: #444444;
+}
+
+@media (min-width: 480px) {
+  .dot-separator-vertical {
+    display: inline;
+  }
+}
+
+.text-phone-gray {
+  color: #666666;
+  white-space: nowrap;
+}
+
+/* Lado Direito (Seta) */
+.right-section-actions {
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.arrow-indicator-thin {
+  color: #444444;
+  font-size: 0.85rem;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.aluno-row-item:hover .arrow-indicator-thin {
+  color: #ffffff;
+  transform: translateX(4px);
+}

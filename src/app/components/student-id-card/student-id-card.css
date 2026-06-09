@@ -36,12 +36,13 @@
   }
 }
 
-/* --- DESIGN PREMIUM (AZUL E VERMELHO) --- */
+/* --- DESIGN PREMIUM (CINZA ESCURO E VERMELHO) --- */
 .card {
   width: 85.6mm;
   height: 53.98mm;
-  background-color: #001f3f !important; /* Azul Marinho Profundo */
-  border: 1mm solid #e63946 !important; /* Borda Vermelha Vibrante */
+  /* ALTERADO: Cinza escuro premium de alto contraste para impressão limpa */
+  background-color: #1a1a1a !important; 
+  border: 1mm solid #e63946 !important; /* Borda Vermelha Vibrante mantida */
   border-radius: 4mm;
   padding: 4mm;
   box-sizing: border-box;

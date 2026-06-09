@@ -98,6 +98,17 @@
     </div>
     }
 
+    @if(podeAcessarProfessores() || podeAcessarAdministrativoERh()){
+    <div class="card-horizontal" (click)="irParaHistoricoAluno()">
+      <div class="icon-box blue">
+       <i class="fas fa-history"></i>
+      </div>
+      <div class="card-info">
+        <h3>histórico dos Alunos</h3>
+        <p>Avaliação e descrição da evolução dos Alunos</p>
+      </div>
+    </div>
+    }
 
   </main>
 

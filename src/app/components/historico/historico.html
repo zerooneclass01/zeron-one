@@ -1,0 +1,143 @@
+<div class="timeline-container">
+  
+  <div class="timeline-header" *ngIf="aluno">
+    <div class="header-left">
+      <button class="btn-back" (click)="voltar()">
+        <i class="fas fa-arrow-left"></i> Voltar
+      </button>
+      <h1>Histórico do Aluno</h1>
+      <p class="subtitle">Gerencie as avaliações de evolução e comportamento</p>
+    </div>
+    
+    <button class="btn-new-record" (click)="abrirModalCriar()">
+      <i class="fas fa-plus"></i> Novo Registro
+    </button>
+  </div>
+
+  <div class="search-bar-wrapper">
+    <i class="fas fa-search search-icon"></i>
+    <input 
+      type="text" 
+      placeholder="Buscar por descrição no histórico..." 
+      [(ngModel)]="filtroDescricao"
+      (input)="filtrar()"
+      class="input-dark">
+  </div>
+
+  <div class="student-profile" *ngIf="aluno">
+    <div class="profile-avatar-initial">
+      <span>{{ aluno.nome?.charAt(0).toUpperCase() }}</span>
+    </div>
+    <div class="profile-info">
+      <h3>{{ aluno.nome }}</h3>
+      <p>Turma: <span>{{ nomeTurmaDoAluno }}</span></p>
+    </div>
+  </div>
+
+  <div class="timeline-wrapper" *ngIf="historicosFiltrados.length > 0; else noRecords">
+    <div class="timeline-line"></div>
+
+    <div class="timeline-item" *ngFor="let item of historicosFiltrados">
+      
+      <div class="timeline-marker">
+        <span class="timeline-date">{{ item.dataRegistro | date:'dd/MM/yyyy' }}</span>
+        <div class="timeline-dot" [ngClass]="getCorStatus(item.statusDesempenho)"></div>
+      </div>
+
+      <div class="timeline-card">
+        <div class="card-top-bar">
+          <div class="card-header-tags">
+            <span class="badge" [ngClass]="getCorStatus(item.statusDesempenho)">
+              Evolução: {{ getTextoStatus(item.statusDesempenho) }}
+            </span>
+
+            <span class="badge" *ngIf="item.statusComportamento" [ngClass]="getCorStatus(item.statusComportamento)">
+              Comportamento: {{ getTextoStatus(item.statusComportamento) }}
+            </span>
+          </div>
+
+          <div class="card-actions" style="display: flex; gap: 12px;">
+            <button class="action-btn" title="Editar" (click)="abrirModalEditar(item)">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button class="action-btn btn-delete-card" title="Excluir" (click)="excluirRegistro(item.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <p class="card-description">{{ item.descricao }}</p>
+        <span class="card-author">Professor: {{ item.nomeProfessor }}</span>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #noRecords>
+    <div class="empty-state">
+      <i class="fas fa-folder-open"></i>
+      <p>Nenhum registro de evolução encontrado para este aluno.</p>
+    </div>
+  </ng-template>
+
+  <div class="modal-overlay" *ngIf="exibirModal">
+    <div class="modal-card">
+      
+      <div class="modal-header">
+        <h2>{{ modoEdicao ? 'Atualizar Registro de Evolução' : 'Novo Registro de Evolução' }}</h2>
+        <button class="btn-close" (click)="fecharModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>Professor Responsável</label>
+          <input type="text" [value]="modoEdicao ? registroEdicao.nomeProfessor : nomeProfessor" class="input-dark" readonly style="cursor: not-allowed; opacity: 0.7;">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Evolução / Desempenho</label>
+            <select [(ngModel)]="novoRegistro.statusDesempenho" class="input-dark-select">
+              <option [value]="1">Excelente</option>
+              <option [value]="2">Regular</option>
+              <option [value]="3">Ruim</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Comportamento</label>
+            <select [(ngModel)]="novoRegistro.statusComportamento" class="input-dark-select">
+              <option [value]="1">Excelente</option>
+              <option [value]="2">Regular</option>
+              <option [value]="3">Ruim</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Descrição da Observação</label>
+          <textarea 
+            [(ngModel)]="novoRegistro.descricao" 
+            placeholder="Excelente participação em conversação..." 
+            rows="5" 
+            class="input-dark textarea-dark">
+          </textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+        <button 
+          type="button" 
+          class="btn-save" 
+          [disabled]="!novoRegistro.descricao?.trim()" 
+          (click)="salvarRegistro()">
+          {{ modoEdicao ? 'Atualizar' : 'Salvar Registro' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

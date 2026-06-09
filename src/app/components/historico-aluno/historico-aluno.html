@@ -1,0 +1,69 @@
+<div class="alunos-container">
+  
+  <div class="timeline-header-block">
+    <button class="btn-back" (click)="voltar()">
+      <i class="fas fa-arrow-left"></i> Voltar
+    </button>
+    
+    <div class="header-titles">
+      <h1>Alunos</h1>
+      <p class="subtitle">Gerencie seus alunos e turmas</p>
+    </div>
+  </div>
+
+  <div class="search-section-centered">
+    <div class="filters-wrapper">
+      
+      <div class="search-bar-box">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar aluno..." 
+          [(ngModel)]="filtroNome"
+          (input)="filtrar()"
+          class="input-dark-rounded">
+      </div>
+
+      <div class="select-bar-box">
+        <select 
+          [(ngModel)]="turmaSelecionada" 
+          (change)="filtrar()" 
+          class="select-dark-rounded">
+          <option value="">Todas as Turmas</option>
+          <option *ngFor="let turma of listaTurmas" [value]="turma.id">
+            {{ turma.nome }}
+          </option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="alunos-list-block">
+    <div 
+      class="aluno-row-item" 
+      *ngFor="let item of alunosFiltrados" 
+      (click)="verHistorico(item.id)">
+      
+      <div class="left-section-data">
+        <div class="avatar-red-circle">
+          {{ getPrimeiraLetra(item.nome) }}
+        </div>
+
+        <div class="text-data-details">
+          <span class="aluno-title">{{ item.nome }}</span>
+          <div class="sub-info-row">
+            <span class="tag-turma-gray" *ngIf="item.turmaNome">{{ item.turmaNome }}</span>
+            <span class="dot-separator-vertical" *ngIf="item.turmaNome && item.telefone">•</span>
+            <span class="text-phone-gray">{{ item.telefone || 'Sem telefone' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section-actions">
+        <i class="fas fa-chevron-right arrow-indicator-thin"></i>
+      </div>
+
+    </div>
+  </div>
+</div>
