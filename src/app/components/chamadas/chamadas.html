@@ -47,7 +47,7 @@
   <div class="alunos-section" *ngIf="alunos.length > 0">
     <div class="instruction-row">
       <i class="fas" [ngClass]="chamadaIdExistente ? 'fa-info-circle icon-blue' : 'fa-comment-dots icon-yellow'"></i>
-      <p>{{ chamadaIdExistente ? 'Esta chamada já foi lançada. Você pode editar os dados abaixo.' : 'Toque no ícone de balão para adicionar observações' }}</p>
+      <p>{{ chamadaIdExistente ? 'Esta chamada já foi lançada para esta data. Você pode editar os dados abaixo.' : 'Nova chamada para esta data. Toque no ícone de balão para adicionar observações.' }}</p>
     </div>
     
     <div class="aluno-row-card-container" *ngFor="let aluno of alunos">
@@ -91,9 +91,9 @@
 
     <div class="footer-actions">
       <button class="btn-save-final" (click)="salvarChamada()" [disabled]="carregando">
-          <span *ngIf="!carregando">
-          <i class="fas" [ngClass]="isDataRetroativa ? 'fa-sync' : 'fa-save'"></i>
-          {{ isDataRetroativa ? 'Atualizar Chamada' : 'Salvar Chamada' }}
+        <span *ngIf="!carregando">
+          <i class="fas" [ngClass]="chamadaIdExistente ? 'fa-sync' : 'fa-save'"></i>
+          {{ chamadaIdExistente ? 'Atualizar Chamada' : 'Salvar Chamada' }}
         </span>
         <span *ngIf="carregando">Processando...</span>
       </button>

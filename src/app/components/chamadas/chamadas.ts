@@ -3,7 +3,7 @@ import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
 import { TurmaService } from '../../services/turma';
-import { ChamadaService, AdicionarChamadaModel, AlunoPresencaModel } from '../../services/chamada';
+import { ChamadaService, AdicionarChamadaModel } from '../../services/chamada';
 import { ChamadaItemService } from '../../services/chamada-item';
 import { Router } from '@angular/router';
 
@@ -23,7 +23,6 @@ export class ChamadaComponent implements OnInit {
   dataAula: string = new Date().toLocaleDateString('en-CA');
 
   carregando: boolean = false;
-  isDataRetroativa: boolean = false;
   chamadaIdExistente: string | null = null; // Controla se é edição ou criação
 
   constructor(
@@ -36,23 +35,12 @@ export class ChamadaComponent implements OnInit {
 
   ngOnInit() {
     this.carregarTurmas();
-    this.validarData();
   }
 
   onDataChange() {
-    this.validarData();
     if (this.idTurmaSelecionada) {
       this.onTurmaChange();
     }
-  }
-
-  validarData() {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const [ano, mes, dia] = this.dataAula.split('-').map(Number);
-    const dataSelecionada = new Date(ano, mes - 1, dia);
-    this.isDataRetroativa = dataSelecionada.getTime() < hoje.getTime();
-    this.cdRef.detectChanges();
   }
 
   carregarTurmas() {
@@ -70,23 +58,22 @@ export class ChamadaComponent implements OnInit {
     this.carregando = true;
     this.chamadaIdExistente = null;
 
-    // 1. Primeiro, busca a lista OFICIAL de alunos da turma (que tem os nomes)
+    // 1. Busca a lista oficial de alunos da turma
     this.turmaService.obterAlunosDaTurma(this.idTurmaSelecionada).subscribe({
       next: (alunosDaTurma) => {
 
-        // 2. Depois, busca se existe chamada para essa data
+        // 2. Busca se existe chamada para essa data específica
         this.chamadaService.obterPorTurmaEData(this.idTurmaSelecionada, this.dataAula).subscribe({
           next: (chamada) => {
             if (chamada) {
               this.chamadaIdExistente = chamada.idChamada;  
 
-              // 3. O PULO DO GATO: Mapeia os alunos da turma, mas busca o status dentro da 'chamada'
+              // 3. Mapeia os alunos da turma trazendo o status salvo no banco
               this.alunos = alunosDaTurma.map((alunoOficial: any) => {
-                // Procura se esse aluno tem registro na chamada que veio do banco
                 const registroPresenca = chamada.alunos.find((a: any) => a.alunoId === alunoOficial.id);
 
                 return {
-                  ...alunoOficial, // Aqui vem o NOME que você precisa
+                  ...alunoOficial,
                   id: alunoOficial.id,
                   presente: registroPresenca ? registroPresenca.presente : true,
                   observacao: registroPresenca ? registroPresenca.observacao : 'aluno presente',
@@ -108,6 +95,7 @@ export class ChamadaComponent implements OnInit {
       }
     });
   }
+
   private carregarAlunosPadrao() {
     this.turmaService.obterAlunosDaTurma(this.idTurmaSelecionada).subscribe({
       next: (res) => {
@@ -142,15 +130,11 @@ export class ChamadaComponent implements OnInit {
       return;
     }
 
-    if (this.isDataRetroativa) {
+    // Corrigido: Agora aponta corretamente para os dois métodos de destino
+    if (this.chamadaIdExistente) {
       this.executarAtualizacao();
     } else {
-      // Se for data de hoje e não tiver ID existente, registra novo
-      if (this.chamadaIdExistente) {
-        this.executarAtualizacao();
-      } else {
-        this.executarRegistroChamadaNormal();
-      }
+      this.executarRegistroChamadaNormal();
     }
   }
 
@@ -159,15 +143,14 @@ export class ChamadaComponent implements OnInit {
     const payload = this.montarPayload();
 
     this.chamadaService.registrar(payload).subscribe({
-      next: (res: any) => { // Recebe a resposta da API
+      next: (res: any) => {
         this.carregando = false;
 
         if (res && res.id) {
           this.chamadaIdExistente = res.id;
         }
 
-        alert("Chamada registrada!");
-
+        alert("Chamada registrada com sucesso!");
         this.cdRef.detectChanges();
       },
       error: (err) => {
@@ -186,7 +169,7 @@ export class ChamadaComponent implements OnInit {
 
     this.carregando = true;
     const alunosParaAtualizar = this.alunos.map(a => ({
-      alunoId: a.id, // Certifique-se que o 'id' aqui é o ID do Aluno
+      alunoId: a.id,
       presente: !!a.presente,
       observacao: a.observacao
     }));
@@ -211,7 +194,7 @@ export class ChamadaComponent implements OnInit {
       turmaId: this.idTurmaSelecionada,
       dataAula: this.dataAula,
       alunos: this.alunos.map(a => ({
-        alunoId: a.id, // Alinhado com o objeto da tela
+        alunoId: a.id,
         presente: !!a.presente,
         observacao: a.observacao || "aluno presente"
       }))
@@ -224,6 +207,6 @@ export class ChamadaComponent implements OnInit {
   }
 
   voltar() {
-    this.router.navigate(['/deshboard'])
+    this.router.navigate(['/deshboard']);
   }
 }
