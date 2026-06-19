@@ -10,8 +10,8 @@ export class GoogleDriveService {
   
   // Mapeamento dos IDs das duas pastas públicas
   private folders = {
-    administrativo: '1WNru-FBH3exn44IuNFBWlj-Bw-uIl-g9', // Pasta que já tinhas
-    professor: '1g41PEJIlxYs1KZA8d-auzigbcjY_eTkQ' // Cole aqui o ID da nova pasta
+    administrativo: '1WNru-FBH3exn44IuNFBWlj-Bw-uIl-g9',
+    professor: '1g41PEJIlxYs1KZA8d-auzigbcjY_eTkQ'
   };
 
   constructor() {}
@@ -19,13 +19,13 @@ export class GoogleDriveService {
   /**
    * Busca os arquivos de ambas as pastas e unifica a lista
    */
-  /**
-   * Busca os arquivos de ambas as pastas e unifica a lista
-   */
   async listFiles(): Promise<any[]> {
-    // Monta as URLs de busca para cada pasta
-    const urlAdmin = `https://www.googleapis.com/drive/v3/files?q='${this.folders.administrativo}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,size)&key=${this.apiKey}`;
-    const urlProf = `https://www.googleapis.com/drive/v3/files?q='${this.folders.professor}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,size)&key=${this.apiKey}`;
+    // CORREÇÃO ESSENCIAL: Codificar a query (q) de forma segura para a API do Google aceitar em produção
+    const qAdmin = encodeURIComponent(`'${this.folders.administrativo}' in parents and trashed = false`);
+    const qProf = encodeURIComponent(`'${this.folders.professor}' in parents and trashed = false`);
+
+    const urlAdmin = `https://www.googleapis.com/drive/v3/files?q=${qAdmin}&fields=files(id,name,mimeType,size)&key=${this.apiKey}`;
+    const urlProf = `https://www.googleapis.com/drive/v3/files?q=${qProf}&fields=files(id,name,mimeType,size)&key=${this.apiKey}`;
     
     try {
       // Faz os dois pedidos HTTP ao mesmo tempo (ganho de performance)
@@ -34,7 +34,6 @@ export class GoogleDriveService {
         fetch(urlProf)
       ]);
 
-      // CORREÇÃO: Chamando .json() nas respostas das requisições (resAdmin e resProf)
       const dataAdmin = resAdmin.ok ? await resAdmin.json() : { files: [] };
       const dataProf = resProf.ok ? await resProf.json() : { files: [] };
 
@@ -47,7 +46,7 @@ export class GoogleDriveService {
 
     } catch (error) {
       console.error('Erro ao unificar arquivos do Drive:', error);
-      throw error;
+      return []; // Retorna lista vazia em vez de quebrar a aplicação se a rede falhar
     }
   }
 
