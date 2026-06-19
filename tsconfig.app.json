@@ -4,7 +4,7 @@
     "outDir": "./out-tsc/app",
     "rootDir": "./src",
     "baseUrl": "./",
-    "types": []
+    "types": ["gapi"]
   },
   "files": [
     "src/main.ts"
@@ -17,4 +17,5 @@
     "src/**/*.spec.ts",
     "test.ts"
   ]
+  
 }

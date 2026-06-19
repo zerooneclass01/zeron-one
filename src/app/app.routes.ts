@@ -14,6 +14,7 @@ import { PerfilComponent } from './components/usuario/usuario';
 import { RankingComponent } from './components/ranking/ranking';
 import { HistoricoAlunoComponent } from './components/historico-aluno/historico-aluno';
 import { HistoricoComponent } from './components/historico/historico';
+import { GoogleDriveComponent } from './components/google-drive/google-drive';
 
 // Importe o seu guard aqui (ajuste o caminho se necessário)
 import { authGuard } from '../app/services/auth.guard'; 
@@ -50,7 +51,8 @@ export const routes: Routes = [
       { path: 'relatorio-chamada/:id', component: RelatorioChamada },
       { path: 'ranking', component: RankingComponent },
       { path:'historico-aluno',component : HistoricoAlunoComponent},
-      {path: 'historico/:alunoId', component: HistoricoComponent}
+      {path: 'historico/:alunoId', component: HistoricoComponent},
+      {path:'google-drive',component: GoogleDriveComponent}
     ]
   },
 

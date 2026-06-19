@@ -1,0 +1,56 @@
+<div class="container-drive">
+  <div class="back-navigation">
+    <button class="btn-back" (click)="voltar()">← Voltar</button>
+  </div>
+
+  <div class="header-section">
+    <h1>Arquivos Cloud</h1>
+    <p class="subtitle">Documentos pedagógicos e administrativos da Zero One</p>
+  </div>
+
+  <div class="dashboard-section">
+    
+    <div class="toolbar-section">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          placeholder="Buscar documento administrativo ou pedagógico..." 
+          class="input-search"
+          [(ngModel)]="searchTerm"
+          (input)="filtrarArquivos()"
+        >
+      </div>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Buscando na nuvem...</p>
+    </div>
+
+    <div class="files-list" *ngIf="!isLoading">
+      
+      <div class="empty-state" *ngIf="filteredFiles.length === 0">
+        Nenhum documento encontrado nestas pastas.
+      </div>
+
+      <div *ngFor="let file of filteredFiles" class="file-card" (click)="baixarArquivo(file.id, file.name)">
+        <div class="card-left">
+          <div class="file-avatar">
+            <span>📄</span>
+          </div>
+          <div class="file-details">
+            <h3>{{ file.name }}</h3>
+            <p>[{{ file.deparment }}] · {{ file.mimeType.split('.').pop() || 'Documento' }}</p>
+          </div>
+        </div>
+        
+        <div class="card-right">
+          <span class="arrow-icon">❯</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -81,4 +81,8 @@ export class Dashboard implements OnInit {
   irParaHistoricoAluno(){
     this.router.navigate(['../historico-aluno'])
   }
+
+  irParaDrive(){
+    this.router.navigate(['../google-drive'])
+  }
 }

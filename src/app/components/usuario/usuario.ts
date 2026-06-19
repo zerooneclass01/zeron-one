@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario';
@@ -18,7 +18,7 @@ export class PerfilComponent implements OnInit {
   listaUsuarios = signal<UsuarioResponse[]>([]);
   carregando = signal<boolean>(false);
   usuarioLogadoRole = signal<number | null>(null);
-  usuarioLogadoName = signal<string>(''); 
+  usuarioLogadoName = signal<string>('');
   senhaVisivel = signal<boolean>(false);
 
   // Signal para criação de novo usuário
@@ -29,6 +29,9 @@ export class PerfilComponent implements OnInit {
   });
 
   private usuarioService = inject(UsuarioService);
+  constructor(
+    private cdRef: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
     this.obterDadosSessao();
@@ -37,10 +40,12 @@ export class PerfilComponent implements OnInit {
 
   obterDadosSessao() {
     const role = localStorage.getItem('user_role');
-    const user = localStorage.getItem('username'); 
-    
+    const user = localStorage.getItem('username');
+
     if (role !== null) this.usuarioLogadoRole.set(Number(role));
     if (user !== null) this.usuarioLogadoName.set(user);
+
+    this.cdRef.detectChanges();
   }
 
   carregarUsuarios() {
@@ -49,6 +54,7 @@ export class PerfilComponent implements OnInit {
       next: (dados) => {
         this.listaUsuarios.set(dados);
         this.carregando.set(false);
+        this.cdRef.detectChanges();
       },
       error: () => {
         this.carregando.set(false);
@@ -78,7 +84,7 @@ export class PerfilComponent implements OnInit {
 
   filtrar(event: Event) {
     const termo = (event.target as HTMLInputElement).value.toLowerCase();
-    
+
     if (!termo) {
       this.carregarUsuarios(); // Recarrega se estiver vazio
       return;
@@ -128,12 +134,12 @@ export class PerfilComponent implements OnInit {
     this.usuarioService.resetarSenha(request).subscribe({
       next: () => {
         this.carregando.set(false);
-        Swal.fire({ 
-          title: 'Sucesso!', 
-          text: 'Senha atualizada.', 
-          icon: 'success', 
-          background: '#161b22', 
-          color: '#fff' 
+        Swal.fire({
+          title: 'Sucesso!',
+          text: 'Senha atualizada.',
+          icon: 'success',
+          background: '#161b22',
+          color: '#fff'
         });
       },
       error: () => {
@@ -170,8 +176,8 @@ export class PerfilComponent implements OnInit {
     this.senhaVisivel.update(v => !v);
   }
 
-  voltar() { 
-    window.history.back(); 
+  voltar() {
+    window.history.back();
   }
 
   private notificarErro(msg: string) {

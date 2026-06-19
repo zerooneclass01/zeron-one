@@ -89,7 +89,7 @@
     @if(podeAcessarProfessores() || podeAcessarAdministrativoERh()){
     <div class="card-horizontal" (click)="irParaRanking()">
       <div class="icon-box yellow">
-       <i class="fas fa-trophy"></i>
+        <i class="fas fa-trophy"></i>
       </div>
       <div class="card-info">
         <h3>Ranking</h3>
@@ -101,11 +101,23 @@
     @if(podeAcessarProfessores() || podeAcessarAdministrativoERh()){
     <div class="card-horizontal" (click)="irParaHistoricoAluno()">
       <div class="icon-box blue">
-       <i class="fas fa-history"></i>
+        <i class="fas fa-history"></i>
       </div>
       <div class="card-info">
         <h3>histórico dos Alunos</h3>
         <p>Avaliação e descrição da evolução dos Alunos</p>
+      </div>
+    </div>
+    }
+
+    @if(podeAcessarProfessores() || podeAcessarAdministrativoERh()){
+    <div class="card-horizontal" (click)="irParaDrive()">
+      <div class="icon-box blue">
+        <i class="fas fa-cloud"></i>
+      </div>
+      <div class="card-info">
+        <h3>Arquivos Cloud</h3>
+        <p>Documentos pedagógicos e administrativos do sistema</p>
       </div>
     </div>
     }
