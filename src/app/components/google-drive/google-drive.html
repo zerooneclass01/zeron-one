@@ -1,6 +1,18 @@
 <div class="container-drive">
-  <div class="back-navigation">
+  <div class="back-navigation" style="display: flex; justify-content: space-between; align-items: center;">
     <button class="btn-back" (click)="voltar()">← Voltar</button>
+    
+    <div *ngIf="isInsideSubfolder">
+      <input 
+        type="file" 
+        #fileInput 
+        style="display: none;" 
+        (change)="subirArquivo($event)"
+      >
+      <button class="btn-back" style="color: #4da6ff;" (click)="fileInput.click()">
+        📤 Subir para esta Pasta
+      </button>
+    </div>
   </div>
 
   <div class="header-section">
@@ -25,28 +37,38 @@
 
     <div class="loading-state" *ngIf="isLoading">
       <div class="spinner"></div>
-      <p>Buscando na nuvem...</p>
+      <p>Processando na nuvem...</p>
     </div>
 
     <div class="files-list" *ngIf="!isLoading">
       
       <div class="empty-state" *ngIf="filteredFiles.length === 0">
-        Nenhum documento encontrado nestas pastas.
+        Nenhum documento encontrado nesta pasta.
       </div>
 
-      <div *ngFor="let file of filteredFiles" class="file-card" (click)="baixarArquivo(file.id, file.name)">
+      <div 
+        *ngFor="let file of filteredFiles" 
+        class="file-card" 
+        (click)="file.mimeType === 'application/vnd.google-apps.folder' ? abrirPasta(file.id) : baixarArquivo(file.id, file.name)"
+      >
         <div class="card-left">
+          
           <div class="file-avatar">
-            <span>📄</span>
+            <span *ngIf="file.mimeType === 'application/vnd.google-apps.folder'">📁</span>
+            <span *ngIf="file.mimeType !== 'application/vnd.google-apps.folder'">📄</span>
           </div>
+          
           <div class="file-details">
             <h3>{{ file.name }}</h3>
-            <p>[{{ file.deparment }}] · {{ file.mimeType.split('.').pop() || 'Documento' }}</p>
+            <p>
+              [{{ file.deparment || 'Geral' }}] · 
+              {{ file.mimeType === 'application/vnd.google-apps.folder' ? 'Pasta' : (file.name.split('.').pop()?.toUpperCase() || 'ARQUIVO') }}
+            </p>
           </div>
         </div>
         
         <div class="card-right">
-          <span class="arrow-icon">❯</span>
+          <span class="arrow-icon">{{ file.mimeType === 'application/vnd.google-apps.folder' ? '❯' : '📥' }}</span>
         </div>
       </div>
 
