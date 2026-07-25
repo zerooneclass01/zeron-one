@@ -16,9 +16,10 @@ import { HistoricoAlunoComponent } from './components/historico-aluno/historico-
 import { HistoricoComponent } from './components/historico/historico';
 import { GoogleDriveComponent } from './components/google-drive/google-drive';
 import { ChamadaPrintComponent } from './components/turma/chamada-print/chamada-print';
+import { StudentIdCardComponent } from './components/student-id-card/student-id-card';
 
 // Importe o seu guard aqui (ajuste o caminho se necessário)
-import { authGuard } from '../app/services/auth.guard'; 
+import { authGuard } from '../app/services/auth.guard';
 import path from 'path';
 import { Component } from '@angular/core';
 
@@ -38,10 +39,15 @@ export const routes: Routes = [
       { path: 'aluno/atualizar/:id', component: AlunoAtualizar },
       { path: 'aluno-detalhes/:id', component: AlunoDetalhes },
 
+      {
+        path: 'aluno/:id/student-id-card',
+        component: StudentIdCardComponent
+      },
+
       // Rotas de Turma
       { path: 'turma', component: TurmaComponent },
       { path: 'turma/turma-detalhe/:id', component: TurmaDetalheComponent },
-      {path:'turma/:id/chamada',component:ChamadaPrintComponent},
+      { path: 'turma/:id/chamada', component: ChamadaPrintComponent },
 
       // Outros Módulos
       { path: 'professor', component: ProfessorComponent },
@@ -52,9 +58,9 @@ export const routes: Routes = [
       { path: 'chamadas', component: ChamadaComponent },
       { path: 'relatorio-chamada/:id', component: RelatorioChamada },
       { path: 'ranking', component: RankingComponent },
-      { path:'historico-aluno',component : HistoricoAlunoComponent},
-      {path: 'historico/:alunoId', component: HistoricoComponent},
-      {path:'google-drive',component: GoogleDriveComponent}
+      { path: 'historico-aluno', component: HistoricoAlunoComponent },
+      { path: 'historico/:alunoId', component: HistoricoComponent },
+      { path: 'google-drive', component: GoogleDriveComponent }
     ]
   },
 

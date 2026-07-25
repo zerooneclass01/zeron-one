@@ -1,34 +1,57 @@
-<div class="print-only-container" *ngIf="aluno">
-  
-  <div class="card front">
-    <div class="inner-content">
-      <img src="../../../assets/logo.png" alt="Logo ZeroOne" class="logo">
-      <h2 class="student-name">{{ aluno.nome }}</h2>
-      <div class="role-label">STUDENT / ALUNO</div>
-    </div>
+<div class="page-container" *ngIf="aluno; else semDados">
+
+  <!-- Ações da página (Ocultas ao imprimir) -->
+  <div class="actions-bar no-print">
+    <button class="btn-back" (click)="voltar()">
+      ← Voltar para Perfil
+    </button>
+    <button class="btn-print" (click)="imprimir()">
+      🖨️ Imprimir Carteirinha
+    </button>
   </div>
 
-  <div class="card back">
-    <div class="inner-content">
-      <div class="data-section">
-        <div class="data-row">
-          <span>MATRÍCULA:</span>
-          <strong>{{ aluno.matricula }}</strong>
-        </div>
-        <div class="data-row">
-          <span>IDADE:</span>
-          <strong>{{ aluno.idade }} ANOS</strong>
-        </div>
-      </div>
-
-      <div class="qr-section">
-        <img [src]="qrCodeIdOnly" alt="QR Code" class="qr-code">
-      </div>
-
-      <div class="system-footer">
-        Zero One English Conversation
+  <!-- Cartões de Identificação -->
+  <div class="cards-preview">
+    
+    <!-- Frente -->
+    <div class="card front">
+      <div class="inner-content">
+        <img src="assets/logo.png" alt="Logo ZeroOne" class="logo">
+        <h2 class="student-name">{{ aluno.nome }}</h2>
+        <div class="role-label">STUDENT / ALUNO</div>
       </div>
     </div>
-  </div>
 
+    <!-- Verso -->
+    <div class="card back">
+      <div class="inner-content">
+        <div class="data-section">
+          <div class="data-row">
+            <span>MATRÍCULA:</span>
+            <strong>{{ aluno.matricula }}</strong>
+          </div>
+          <div class="data-row">
+            <span>IDADE:</span>
+            <strong>{{ aluno.idade }} ANOS</strong>
+          </div>
+        </div>
+
+        <div class="qr-section">
+          <img [src]="qrCodeIdOnly" alt="QR Code" class="qr-code" *ngIf="qrCodeIdOnly">
+        </div>
+
+        <div class="system-footer">
+          Zero One English Conversation
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<ng-template #semDados>
+  <div class="empty-state">
+    <p>Nenhum dado do aluno encontrado.</p>
+    <button class="btn-back" (click)="voltar()">Voltar</button>
+  </div>
+</ng-template>
