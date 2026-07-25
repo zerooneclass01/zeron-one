@@ -5,9 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { TurmaService } from '../../../services/turma';
 import { ProfessorService } from '../../../services/professor';
 
-// Importação dos componentes filhos (Modais)
+// Importação dos componentes filhos (Modais e Impressão)
 import { TurmaVincularAlunoComponent } from '../turma-vincular-aluno/turma-vincular-aluno';
-import { TurmaEdicaoComponent } from '../turma-atualizar/turma-atualizar'; 
+import { TurmaEdicaoComponent } from '../turma-atualizar/turma-atualizar';
+
 
 @Component({
   selector: 'app-turma-detalhe',
@@ -17,7 +18,7 @@ import { TurmaEdicaoComponent } from '../turma-atualizar/turma-atualizar';
     FormsModule,
     RouterLink,
     TurmaVincularAlunoComponent,
-    TurmaEdicaoComponent 
+    TurmaEdicaoComponent,
   ],
   templateUrl: './turma-detalhe.html',
   styleUrls: ['./turma-detalhe.css']
@@ -49,11 +50,25 @@ export class TurmaDetalheComponent implements OnInit {
 
       if (this.idTurma) {
         this.carregarDados();
-        this.carregarProfessores(); 
+        this.carregarProfessores();
       } else {
         this.router.navigate(['/turma']);
       }
     });
+  }
+
+  // --- GETTER PARA IMPRESSÃO DA CHAMADA ---
+  get dadosParaChamada() {
+    if (!this.turma) return null;
+
+    return {
+      nome: this.turma.nome,
+      professorResponsavel: this.turma.professorNome || 'Não atribuído',
+      horario: this.turma.horario,
+      diaSemana: this.formatarDias(this.turma.diasDaAula),
+      anoLectivo: new Date().getFullYear(),
+      alunos: this.turma.alunos || []
+    };
   }
 
   carregarDados() {
@@ -61,7 +76,7 @@ export class TurmaDetalheComponent implements OnInit {
     this.turmaService.obterPorId(this.idTurma).subscribe({
       next: (data) => {
         this.turma = data;
-        
+
         // Dispara a busca de alunos imediatamente
         this.obterAlunosTurma(this.idTurma);
 
@@ -120,7 +135,7 @@ export class TurmaDetalheComponent implements OnInit {
 
   formatarDias(dias: any): string {
     if (dias === null || dias === undefined || dias === '') return 'Não definido';
-    
+
     const diasMap = [
       { nome: 'Segunda', valor: 2 },
       { nome: 'Terça', valor: 4 },
@@ -140,6 +155,13 @@ export class TurmaDetalheComponent implements OnInit {
   }
 
   // --- AÇÕES DA TELA ---
+
+  imprimirChamada(): void {
+    // Garante que as variáveis foram computadas no HTML antes de acionar a impressão
+    this.router.navigate([`/turma/${this.turma.id}/chamada`], {
+      state: { turma: this.turma }
+    });
+  }
 
   abrirModalEdicao() {
     this.exibirModalEdicao = true;

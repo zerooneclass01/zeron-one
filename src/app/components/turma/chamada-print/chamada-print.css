@@ -1,0 +1,393 @@
+/* ==========================================
+   BARRA DE NAVEGAÇÃO DA PÁGINA
+   ========================================== */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #121212;
+  border-bottom: 1px solid #2a2a2a;
+  padding: 14px 24px;
+  margin-bottom: 20px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-back {
+  background-color: #27272a;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
+}
+
+.btn-back:hover {
+  background-color: #3f3f46;
+}
+
+.page-title h2 {
+  margin: 0;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.badge-mes {
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
+.badge-mes strong {
+  color: #e63946;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-secondary {
+  background-color: #27272a;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-print {
+  background-color: #e63946;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-print:hover {
+  background-color: #c12a36;
+}
+
+/* ==========================================
+   MODAL DARK MODE
+   ========================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  background-color: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 10px;
+  width: 380px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #27272a;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #a1a1aa;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
+.custom-select,
+.custom-input {
+  background-color: #27272a;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid #3f3f46;
+  color: #a1a1aa;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-confirm {
+  background-color: #e63946;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==========================================
+   FOLHA A4 LANDSCAPE (CORPO E TABELA)
+   ========================================== */
+.print-page {
+  background-color: #18181b;
+  color: #f4f4f5;
+  padding: 16px;
+  border-radius: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-table {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #3f3f46;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mascot-badge {
+  font-size: 26px;
+}
+
+.class-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+}
+
+.class-subtitle {
+  font-size: 9px;
+  color: #a1a1aa;
+}
+
+.header-right {
+  text-align: right;
+  font-size: 10px;
+}
+
+.info-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-bottom: 3px;
+  color: #d4d4d8;
+}
+
+.highlight-month {
+  background-color: #27272a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+/* TABELA */
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-bottom: 8px;
+}
+
+.attendance-table th {
+  background-color: #27272a;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+  text-align: center;
+  padding: 4px 1px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.attendance-table td {
+  border: 1px solid #3f3f46;
+  text-align: center;
+  padding: 0;
+  font-size: 10px;
+}
+
+.num-col { width: 26px; }
+.name-col { width: 190px; text-align: left !important; padding-left: 5px !important; }
+.day-col { width: auto; }
+.total-col { width: 38px; }
+
+.student-num {
+  background-color: #27272a;
+  color: #a1a1aa;
+  font-weight: bold;
+}
+
+.student-name {
+  background-color: #27272a;
+  color: #ffffff;
+  text-align: left !important;
+  padding-left: 5px !important;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* QUADRADOS BRANCOS */
+.pen-field,
+.pen-field-name {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+  height: 22px;
+}
+
+/* RODAPÉ */
+.footer-table {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  border-top: 1px solid #3f3f46;
+  padding-top: 6px;
+  color: #a1a1aa;
+}
+
+.signature-box {
+  color: #ffffff;
+}
+
+/* ==========================================
+   CONFIGURAÇÃO DE IMPRESSÃO (A4 LANDSCAPE EXACT 1 PAGE)
+   ========================================== */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 4mm;
+  }
+
+  html, body {
+    height: 100%;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-page {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .class-title { color: #000000 !important; }
+  .class-subtitle { color: #555555 !important; }
+  .info-row { color: #000000 !important; }
+  .highlight-month { background-color: #f0f0f0 !important; color: #000000 !important; }
+
+  .attendance-table th {
+    background-color: #f0f0f0 !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+  }
+
+  .student-num,
+  .student-name {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+  }
+
+  .attendance-table td {
+    border: 1px solid #000000 !important;
+  }
+
+  .footer-table {
+    color: #000000 !important;
+    border-top: 1px solid #000000 !important;
+  }
+
+  .signature-box {
+    color: #000000 !important;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+}

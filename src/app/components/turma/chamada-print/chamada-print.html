@@ -1,0 +1,134 @@
+<!-- BARRA DE NAVEGAÇÃO DA PÁGINA (Oculta na Impressão) -->
+<div class="no-print page-header">
+    <div class="nav-left">
+        <button class="btn-back" (click)="voltar()">
+            <i class="fas fa-arrow-left"></i> Voltar para Turma
+        </button>
+        <div class="page-title">
+            <h2>Emissão de Chamada - {{ turma?.nome }}</h2>
+            <span class="badge-mes">Mês Selecionado: <strong>{{ nomeMesSelecionado }} / {{ anoAtual }}</strong></span>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <button class="btn-secondary" (click)="abrirModal()">
+            <i class="fas fa-calendar-alt"></i> Alterar Mês
+        </button>
+        <button class="btn-print" (click)="confirmarEImprimir()">
+            <i class="fas fa-print"></i> Imprimir Folha
+        </button>
+    </div>
+</div>
+
+<!-- MODAL AUTOMÁTICO DE SELEÇÃO -->
+<div class="modal-overlay no-print" *ngIf="exibirModal" (click)="fecharModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3><i class="fas fa-calendar-alt"></i> Selecionar Mês da Chamada</h3>
+            <button class="btn-close" (click)="fecharModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="modalMes">Mês de Referência:</label>
+                <select id="modalMes" [(ngModel)]="mesTemp" class="custom-select">
+                    @for (mes of listaMeses; track mes.valor) {
+                    <option [value]="mes.valor">{{ mes.nome }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="modalAno">Ano Letivo:</label>
+                <input type="number" id="modalAno" [(ngModel)]="anoTemp" class="custom-input" min="2020" max="2030">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+            <button class="btn-confirm" (click)="confirmarEImprimir()">
+                <i class="fas fa-print"></i> Gerar & Imprimir
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FOLHA DA CHAMADA (A4 LANDSCAPE 1 PÁGINA) -->
+<div class="print-page" *ngIf="turma">
+
+    <!-- CABEÇALHO -->
+    <header class="header-table">
+        <div class="header-left">
+            <div class="mascot-badge">{{ mascoteIcone }}</div>
+            <div class="title-group">
+                <h1 class="class-title">{{ turma.nome }}</h1>
+                <span class="class-subtitle">SISTEMA DE CONTROLE DE FREQUÊNCIA • ZERO ONE</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="info-row">
+                <span><strong>PROFESSOR:</strong> {{ turma.professorResponsavel }}</span>
+                <span><strong>HORÁRIO:</strong> {{ turma.horario }} ({{ turma.diaSemana }})</span>
+            </div>
+            <div class="info-row highlight-month">
+                <span><strong>MÊS DE REFERÊNCIA:</strong> {{ nomeMesSelecionado }} / {{ anoAtual }}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- TABELA DE FREQUÊNCIA -->
+    <table class="attendance-table">
+        <thead>
+            <tr>
+                <th class="num-col">Nº</th>
+                <th class="name-col">NOME DO ALUNO</th>
+                @for (dia of diasDoMes; track dia) {
+                <th class="day-col">{{ dia | number:'2.0-0' }}</th>
+                }
+                <th class="total-col">FALTAS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ALUNOS MATRICULADOS -->
+            @for (aluno of turma.alunos; track aluno.matricula; let i = $index) {
+            <tr>
+                <td class="student-num">{{ (i + 1) | number:'2.0-0' }}</td>
+                <td class="student-name">{{ aluno.nome }}</td>
+                @for (dia of diasDoMes; track dia) {
+                <td class="pen-field"></td>
+                }
+                <td class="pen-field"></td>
+            </tr>
+            }
+
+            <!-- LINHAS EM BRANCO PARA ESCRITA MANUAL -->
+            @for (linha of linhasVazias; track $index; let i = $index) {
+            <tr>
+                <td class="student-num">{{ ((turma.alunos.length || 0) + i + 1) | number:'2.0-0' }}</td>
+                <td class="student-name pen-field-name"></td>
+                @for (dia of diasDoMes; track dia) {
+                <td class="pen-field"></td>
+                }
+                <td class="pen-field"></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- RODAPÉ DA FOLHA -->
+    <footer class="footer-table">
+        <div class="legend-box">
+            <strong>LEGENDA:</strong>
+            <span>[ P ] Presença</span> |
+            <span>[ F ] Falta</span> |
+            <span>[ FJ ] Falta Justificada</span> |
+            <span>[ A ] Atraso</span>
+        </div>
+
+        <div class="signature-box">
+            Assinatura do Professor: _____________________________________________ Data: ____/____/{{ anoAtual }}
+        </div>
+    </footer>
+
+</div>

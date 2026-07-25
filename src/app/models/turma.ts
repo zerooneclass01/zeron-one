@@ -5,3 +5,4 @@ export interface AdicionarAtualizarTurmaModel {
   horario?: string;      
   diasDaSemana?: number; 
 }
+

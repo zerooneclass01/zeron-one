@@ -15,6 +15,7 @@ import { RankingComponent } from './components/ranking/ranking';
 import { HistoricoAlunoComponent } from './components/historico-aluno/historico-aluno';
 import { HistoricoComponent } from './components/historico/historico';
 import { GoogleDriveComponent } from './components/google-drive/google-drive';
+import { ChamadaPrintComponent } from './components/turma/chamada-print/chamada-print';
 
 // Importe o seu guard aqui (ajuste o caminho se necessário)
 import { authGuard } from '../app/services/auth.guard'; 
@@ -40,6 +41,7 @@ export const routes: Routes = [
       // Rotas de Turma
       { path: 'turma', component: TurmaComponent },
       { path: 'turma/turma-detalhe/:id', component: TurmaDetalheComponent },
+      {path:'turma/:id/chamada',component:ChamadaPrintComponent},
 
       // Outros Módulos
       { path: 'professor', component: ProfessorComponent },
