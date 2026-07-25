@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef,ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,20 +10,15 @@ import { AlunoResponser } from '../../models/AlunoResponser.model';
 import { Mensalidade } from '../../models/finaceiro.model';
 import { AlunoAtualizar } from '../aluno-atualizar/aluno-atualizar';
 
-
-import { StudentIdCardComponent} from '../student-id-card/student-id-card';
-
-
-
 @Component({
   selector: 'app-aluno-detalhes',
   standalone: true,
-  imports: [CommonModule, FormsModule, AlunoAtualizar,StudentIdCardComponent],
+  // Removido StudentIdCardComponent dos imports para não renderizar no final da página
+  imports: [CommonModule, FormsModule, AlunoAtualizar],
   templateUrl: './aluno-detalhes.html',
   styleUrl: './aluno-detalhes.css',
 })
 export class AlunoDetalhes implements OnInit {
-  @ViewChild('printer') printer!: StudentIdCardComponent;
   // Centralizamos tudo no 'response' para evitar conflitos de tipos
   response: AlunoResponser | null = null;
   alunoEdicao: any = {};
@@ -44,17 +39,12 @@ export class AlunoDetalhes implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // O setTimeout garante que o Angular termine o ciclo de checagem inicial
-      // resolvendo de vez o erro NG0100.
       setTimeout(() => this.carregarDados(id!), 0);
     }
-
   }
 
   voltar(): void {
-
     this.router.navigate(['/aluno']);
-
   }
 
   carregarDados(id: string): void {
@@ -72,13 +62,13 @@ export class AlunoDetalhes implements OnInit {
       },
       error: () => this.exibirNotificacao('Erro ao carregar dados', 'danger')
     });
-
   }
+
   statusTraducao: any = {
     2: 'Pendente',
     0: 'Pago',
     1: 'Atrasado',
-    'Pendente': 'Pendente', // Caso a API mude para string no futuro
+    'Pendente': 'Pendente',
     'Pago': 'Pago',
     'Atrasado': 'Atrasado'
   };
@@ -99,7 +89,6 @@ export class AlunoDetalhes implements OnInit {
     if (this.response?.id) {
       this.alunoService.atualizar(this.response.id, this.alunoEdicao).subscribe({
         next: () => {
-          // Atualiza a visualização com os novos dados salvos
           this.response = { ...this.alunoEdicao };
           this.exibirNotificacao('Aluno atualizado com sucesso!', 'success');
           this.fechar();
@@ -113,7 +102,6 @@ export class AlunoDetalhes implements OnInit {
   calcularResumo(): void {
     if (!this.mensalidades) return;
 
-    // Convertemos para String e comparamos com o valor desejado
     this.resumo.pago = this.mensalidades
       .filter(m => String(m.status) === 'Pago' || String(m.status) === '0')
       .reduce((sum, m) => sum + m.valor, 0);
@@ -126,6 +114,7 @@ export class AlunoDetalhes implements OnInit {
       .filter(m => String(m.status) === 'Pendente' || String(m.status) === '2')
       .reduce((sum, m) => sum + m.valor, 0);
   }
+
   marcarPago(id: string): void {
     this.financeiroService.pagarMensalidade(id).subscribe({
       next: () => {
@@ -142,7 +131,6 @@ export class AlunoDetalhes implements OnInit {
         this.calcularResumo();
         this.cdRef.detectChanges();
       });
-
     }
   }
 
@@ -159,10 +147,13 @@ export class AlunoDetalhes implements OnInit {
     return item.id;
   }
 
+  // --- AÇÃO DO BOTÃO IMPRIMIR ---
   imprimirCarteirinha(): void {
     if (this.response) {
-      // O comando window.print() acionará o CSS @media print que configuramos
-      window.print();
+      // Corrigido para this.response.id e this.response
+      this.router.navigate([`/aluno/${this.response.id}/student-id-card`], {
+        state: { aluno: this.response }
+      });
     }
   }
 }
