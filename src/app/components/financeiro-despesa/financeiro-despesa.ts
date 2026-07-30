@@ -7,7 +7,15 @@ import { forkJoin } from 'rxjs';
 import { FinanceiroService } from '../../services/financeiro';
 import { AlunoService } from '../../services/aluno';
 import { ProfessorService } from '../../services/professor';
-import { Balancete, Despesa } from '../../models/finaceiro.model';
+import { Balancete, Despesa, Mensalidade } from '../../models/finaceiro.model';
+
+// Mapeamento idêntico ao Enum C# do Backend
+export enum FormaPagamento {
+  CartaoCredito = 0,
+  CartaoDebito = 1,
+  Dinheiro = 2,
+  Pix = 3
+}
 
 @Component({
   selector: 'app-financeiro',
@@ -34,6 +42,13 @@ export class FinanceiroDespesasComponent implements OnInit {
   categorias: string[] = ['Conta', 'Material', 'Aluguel', 'Marketing', 'Manutenção', 'Outros', 'Salário'];
   novaDespesa: Despesa = this.limparDespesa();
   statusTraducao: any = { '0': 'Pago', '1': 'Atrasado', '2': 'Pendente' };
+
+  // --- CONTROLE DO MODAL DE PAGAMENTO ---
+  exibirModalPagamento: boolean = false;
+  mensalidadeSelecionada: any | null = null;
+  formaPagamentoSelecionada: number = FormaPagamento.Dinheiro; // Padrão: 2
+  valorRecebido: number = 0;
+  troco: number = 0;
 
   constructor(
     private financeiroService: FinanceiroService,
@@ -89,7 +104,7 @@ export class FinanceiroDespesasComponent implements OnInit {
         });
 
         this.processarBalanceteManual(mensalidadesMapeadas, despesasMapeadas);
-        this.filtrarAlunos(); // Atualiza a lista filtrada com os novos dados
+        this.filtrarAlunos();
         this.cdRef.detectChanges();
       }
     });
@@ -133,24 +148,59 @@ export class FinanceiroDespesasComponent implements OnInit {
     const statusNum = parseInt(novoStatus);
     this.financeiroService.mudarStatusMensalidade(id, statusNum).subscribe(() => this.carregarDados());
   }
+
+  // --- LÓGICA DO MODAL DE PAGAMENTO ---
+  abrirModalPagamento(mensalidade: any): void {
+    this.mensalidadeSelecionada = mensalidade;
+    this.formaPagamentoSelecionada = FormaPagamento.Dinheiro; // Padrão: 2
+    this.valorRecebido = mensalidade.valor;
+    this.troco = 0;
+    this.exibirModalPagamento = true;
+    this.cdRef.detectChanges();
+  }
+
+  fecharModalPagamento(): void {
+    this.exibirModalPagamento = false;
+    this.mensalidadeSelecionada = null;
+  }
+
+  calcularTroco(): void {
+    if (this.mensalidadeSelecionada && this.valorRecebido > this.mensalidadeSelecionada.valor) {
+      this.troco = this.valorRecebido - this.mensalidadeSelecionada.valor;
+    } else {
+      this.troco = 0;
+    }
+  }
+
+  confirmarPagamento(): void {
+    if (!this.mensalidadeSelecionada) return;
+
+    const id = this.mensalidadeSelecionada.id;
+    const valor = this.mensalidadeSelecionada.valor;
+    const formaPagamento = Number(this.formaPagamentoSelecionada);
+
+    this.financeiroService.pagarMensalidade(id, valor, formaPagamento).subscribe({
+      next: () => {
+        this.fecharModalPagamento();
+        this.carregarDados();
+      },
+      error: (err) => console.error('Erro ao processar pagamento:', err)
+    });
+  }
+
   salvarDespesa() {
-    // Função que entende tanto o seletor (YYYY-MM-DD) quanto a digitação (DD/MM/AAAA)
     const tratarDataParaBackend = (valor: any) => {
       if (!valor) return null;
 
-      // Se já for um objeto Date, apenas formata
       if (valor instanceof Date) return valor.toISOString().split('T')[0];
 
-      // Se for string no formato DD/MM/AAAA (digitado)
       if (typeof valor === 'string' && valor.includes('/')) {
         const [dia, mes, ano] = valor.split('/');
-        // Verifica se o ano tem 4 dígitos para evitar datas inválidas
         if (ano && ano.length === 4) {
           return `${ano}-${mes}-${dia}`;
         }
       }
 
-      // Se for string no formato YYYY-MM-DD (vinda do seletor nativo)
       if (typeof valor === 'string' && valor.includes('-')) {
         return valor.split('T')[0];
       }
@@ -161,7 +211,6 @@ export class FinanceiroDespesasComponent implements OnInit {
     const payload = {
       descricao: this.novaDespesa.descricao,
       valor: this.novaDespesa.valor,
-      // Se falhar na conversão, envia a data de hoje como fallback seguro
       dataVencimento: tratarDataParaBackend(this.novaDespesa.dataVencimento) || new Date().toISOString().split('T')[0],
       dataPagamento: tratarDataParaBackend(this.novaDespesa.dataPagamento),
       pago: this.novaDespesa.pago,
@@ -176,11 +225,6 @@ export class FinanceiroDespesasComponent implements OnInit {
       error: (err) => console.error("Erro 400 detalhes:", err.error)
     });
   }
-  confirmarPagamento(id: string) {
-    if (confirm('Confirmar recebimento?')) {
-      this.financeiroService.pagarMensalidade(id).subscribe(() => this.carregarDados());
-    }
-  }
 
   fecharModalDespesa() {
     this.exibirModalDespesa = false;
@@ -188,7 +232,7 @@ export class FinanceiroDespesasComponent implements OnInit {
   }
 
   limparDespesa(): Despesa {
-    return {id :'', descricao: '', valor: 0, dataVencimento: new Date().toISOString().split('T')[0], dataPagamento: new Date().toISOString().split('T')[0], pago: true, categoria: 0 };
+    return { id: '', descricao: '', valor: 0, dataVencimento: new Date().toISOString().split('T')[0], dataPagamento: new Date().toISOString().split('T')[0], pago: true, categoria: 0 };
   }
 
   traduzirCategoria(cat: number) { return this.categorias[cat] || 'Outros'; }
@@ -207,7 +251,6 @@ export class FinanceiroDespesasComponent implements OnInit {
     if (confirm('Deseja excluir esta despesa permanentemente?')) {
       this.financeiroService.excluirDespesa(id).subscribe({
         next: () => {
-          // Atualiza a lista na tela após a exclusão bem-sucedida
           this.carregarDados();
         },
         error: (err) => {

@@ -63,7 +63,7 @@ export class TurmaDetalheComponent implements OnInit {
 
     return {
       nome: this.turma.nome,
-      professorResponsavel: this.turma.professorNome || 'Não atribuído',
+      professorResponsavel: this.turma.professorResponsavel || 'Não atribuído',
       horario: this.turma.horario,
       diaSemana: this.formatarDias(this.turma.diasDaAula),
       anoLectivo: new Date().getFullYear(),

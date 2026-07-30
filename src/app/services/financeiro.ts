@@ -44,8 +44,13 @@ export class FinanceiroService {
   }
 
   // Corresponde ao [HttpPatch("mensalidade/{id:guid}/pagar")]
-  pagarMensalidade(id: string): Observable<void> {
-    return this.http.patch<void>(`${this.API}/mensalidade/${id}/pagar`, {});
+  pagarMensalidade(id: string, valor: number = 0, formaPagamento: number =0): Observable<void> {
+    const params = new HttpParams()
+      .set('valor', valor.toString())
+      .set('formapagamento', formaPagamento.toString());
+
+    // Passamos 'null' no corpo (Body) e enviamos os dados via 'params'
+    return this.http.patch<void>(`${this.API}/mensalidade/${id}/pagar`, null, { params });
   }
 
   // Novo: Corresponde ao [HttpPatch("MudarStatus-Mensalida/{id:guid}")]
@@ -68,7 +73,7 @@ export class FinanceiroService {
       .set('alunoId', alunoId)
       .set('valor', valor.toString())
       .set('vencimento', vencimento); // Recomendo enviar a string do input date (YYYY-MM-DD)
-    
+
     return this.http.post(`${this.API}/mensalidade/gerar`, null, { params });
   }
 

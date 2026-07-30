@@ -68,7 +68,7 @@
             <th>MÊS</th>
             <th>VALOR</th>
             <th>VENCIMENTO</th>
-            <th>DATA Pagamento</th>
+            <th>DATA PAGAMENTO</th>
             <th>STATUS</th>
             <th class="text-end px-3">AÇÕES</th>
           </tr>
@@ -85,17 +85,92 @@
               </span>
             </td>
             <td class="text-end px-3">
-              <button class="btn-success-custom" *ngIf="m?.status !== 'Pago'" (click)="marcarPago(m.id)">
+              <button class="btn-success-custom" *ngIf="m?.status !== 'Pago'" (click)="abrirModalPagamento(m)">
                 Marcar Pago
               </button>
               <button class="btn btn-sm btn-outline-secondary rounded-pill" *ngIf="m?.status === 'Pago'"
-                (click)="marcarPago(m.id)">
-                Desfazer
+                (click)="abrirModalPagamento(m)">
+                Editar Pagamento
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL DE PAGAMENTO DARK MODE -->
+<div class="modal d-block bg-black bg-opacity-75" tabindex="-1" *ngIf="exibirModalPagamento && mensalidadeSelecionada">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border border-secondary shadow-lg rounded-4">
+      
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-danger fw-bold d-flex align-items-center gap-2">
+          <i class="fas fa-cash-register"></i> Confirmar Pagamento
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="fecharModalPagamento()"></button>
+      </div>
+
+      <div class="modal-body p-4">
+        <!-- Referência -->
+        <div class="mb-3">
+          <label class="form-label text-secondary small fw-bold">MÊS DE REFERÊNCIA</label>
+          <input type="text" class="form-control bg-black text-white border-secondary rounded-3" 
+                 [value]="mensalidadeSelecionada.vencimento" readonly>
+        </div>
+
+        <!-- Valor da Mensalidade -->
+        <div class="mb-3">
+          <label class="form-label text-secondary small fw-bold">VALOR DA MENSALIDADE</label>
+          <div class="input-group">
+            <span class="input-group-text bg-secondary bg-opacity-25 text-white border-secondary">R$</span>
+            <input type="number" class="form-control bg-black text-white border-secondary fw-bold rounded-end-3" 
+                   [value]="mensalidadeSelecionada.valor" readonly>
+          </div>
+        </div>
+
+        <!-- Forma de Pagamento (Mapeado com Enum C#) -->
+        <div class="mb-3">
+          <label class="form-label text-secondary small fw-bold">FORMA DE PAGAMENTO</label>
+          <select class="form-select bg-black text-white border-secondary rounded-3" [(ngModel)]="formaPagamentoSelecionada">
+            <option [value]="0">Cartão de Crédito</option>
+            <option [value]="1">Cartão de Débito</option>
+            <option [value]="2">Dinheiro</option>
+            <option [value]="3">Pix</option>
+          </select>
+        </div>
+
+        <!-- CALCULADORA DE TROCO (Exclusivo para Dinheiro = 2) -->
+        <div *ngIf="formaPagamentoSelecionada == 2" class="p-3 bg-black rounded-3 border border-secondary mb-3 shadow-inner">
+          <div class="mb-2">
+            <label class="form-label text-warning small fw-bold mb-1">
+              <i class="fas fa-calculator me-1"></i> Calculadora de Troco
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-secondary bg-opacity-25 text-white border-secondary">R$ Entregue</span>
+              <input type="number" class="form-control bg-dark text-white border-secondary" 
+                     [(ngModel)]="valorRecebido" (ngModelChange)="calcularTroco()">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary" *ngIf="troco > 0">
+            <span class="text-secondary small">Troco a devolver:</span>
+            <span class="h5 mb-0 fw-bold text-success">R$ {{ troco | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-outline-secondary text-white rounded-pill px-4" (click)="fecharModalPagamento()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-success rounded-pill fw-bold px-4" (click)="confirmarPagamento()">
+          Confirmar Pago
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
