@@ -242,6 +242,7 @@ export class FinanceiroDespesasComponent implements OnInit {
   }
 
   voltar() { this.router.navigate(['/dashboard']); }
+  relatorio() { this.router.navigate(['/relatorio-financeiro']); }
 
   private inicializarBalancete(): Balancete {
     return { periodo: '', mes: 0, ano: 0, totalMensalidadesRecebidas: 0, totalGeralDespesas: 0, saldoLiquido: 0, totalSalariosProfessores: 0, statusFinanceiro: '', valorPendenteReceber: 0, quantidadeAlunosInadimplentes: 0, mensalidades: [], despesas: [] };

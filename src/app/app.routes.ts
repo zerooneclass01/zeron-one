@@ -17,6 +17,7 @@ import { HistoricoComponent } from './components/historico/historico';
 import { GoogleDriveComponent } from './components/google-drive/google-drive';
 import { ChamadaPrintComponent } from './components/turma/chamada-print/chamada-print';
 import { StudentIdCardComponent } from './components/student-id-card/student-id-card';
+import { RelatorioFinanceiroComponent } from './components/financeiro-despesa/relatorio/relatorio';
 
 // Importe o seu guard aqui (ajuste o caminho se necessário)
 import { authGuard } from '../app/services/auth.guard';
@@ -52,6 +53,7 @@ export const routes: Routes = [
       // Outros Módulos
       { path: 'professor', component: ProfessorComponent },
       { path: 'financeiro', component: FinanceiroDespesasComponent },
+      { path: 'relatorio-financeiro', component: RelatorioFinanceiroComponent },
       { path: 'usuario', component: PerfilComponent },
 
       // Chamadas e Ranking

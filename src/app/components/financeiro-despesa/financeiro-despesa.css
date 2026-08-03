@@ -8,7 +8,27 @@
   width: 100%;
   overflow-x: hidden;
 }
+.top-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 25px; /* Substitui o margin-bottom do .btn-back */
+}
 
+.btn-relatorio {
+  margin-left: auto;
+  float: right; /* Fallback caso não estejam em container flex */
+  background: transparent;
+  color: #e51e1e;
+  border: 1px solid #e51e1e;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 25px;
+  transition: all 0.2s;
+}
 /* 2. WRAPPER PRINCIPAL */
 .financeiro-wrapper {
   background-color: #000000;
