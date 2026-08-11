@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { FinanceiroService } from '../../services/financeiro';
 import { AlunoService } from '../../services/aluno';
@@ -60,7 +61,7 @@ export class FinanceiroDespesasComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin({
-      alunos: this.alunoService.obterTodos(),
+      alunos: this.alunoService.obterTodos().pipe(map(alunos=> (alunos ?? []).filter(aluno => aluno.ativo !== false))),
       professores: this.professorService.obterTodos()
     }).subscribe({
       next: (res) => {

@@ -11,7 +11,7 @@ export interface AlunoMatriculado {
 export interface TurmaChamadaData {
   id?: string;
   nome: string;
-  professorResponsavel: string;
+  nomeProfessor: string;
   horario: string;
   diaSemana: string;
   anoLectivo?: number;
@@ -82,7 +82,7 @@ export class ChamadaPrintComponent implements OnInit {
     this.turma = {
       id: id || '1',
       nome: 'RAVENS',
-      professorResponsavel: 'Pedro Rangel',
+      nomeProfessor: 'Pedro Rangel',
       horario: '18:00',
       diaSemana: 'Quarta',
       anoLectivo: 2026,
