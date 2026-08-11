@@ -61,7 +61,7 @@ export class FinanceiroDespesasComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin({
-      alunos: this.alunoService.obterTodos().pipe(map(alunos=> (alunos ?? []).filter(aluno => aluno.ativo !== false))),
+      alunos: this.alunoService.obterTodos().pipe(map(alunos=> (alunos ?? []).filter(aluno => aluno.ativo === true))),
       professores: this.professorService.obterTodos()
     }).subscribe({
       next: (res) => {
