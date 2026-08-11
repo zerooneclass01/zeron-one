@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { FinanceiroService } from '../../services/financeiro';
 import { AlunoService } from '../../services/aluno';
@@ -33,7 +32,7 @@ export class FinanceiroDespesasComponent implements OnInit {
   anoAtual: number = new Date().getFullYear();
 
   balancete: Balancete = this.inicializarBalancete();
-  listaAlunosativos: any[]=[];
+  listaAlunosativos: any[] = [];
   listaAlunos: any[] = [];
   listaProfessores: any[] = [];
 
@@ -67,8 +66,8 @@ export class FinanceiroDespesasComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.listaAlunosativos = res.alunos ?? [];
-        this.listaAlunos = res.alunos.filter( aluno => aluno.ativo === true);
-        this.listaProfessores = res.professores;
+        this.listaAlunos = (res.alunos ?? []).filter(aluno => aluno.ativo === true);
+        this.listaProfessores = res.professores ?? [];
         this.carregarDados();
       },
       error: (err) => console.error('Erro ao carregar dados iniciais', err)
@@ -87,17 +86,21 @@ export class FinanceiroDespesasComponent implements OnInit {
       despesas: this.financeiroService.obterDespesas(mesNum, this.anoAtual)
     }).subscribe({
       next: (res) => {
-        const mensalidadesMapeadas = res.mensalidades
+        const mensalidadesMapeadas = (res.mensalidades ?? [])
           .filter(m => {
             const d = new Date(m.vencimento);
-            return (d.getUTCMonth() + 1) === mesNum && d.getUTCFullYear() === this.anoAtual;
+            const pertenceAoMesEAno = (d.getUTCMonth() + 1) === mesNum && d.getUTCFullYear() === this.anoAtual;
+            
+            const eDeAlunoAtivo = this.listaAlunos.some(a => String(a.id) === String(m.alunoId));
+
+            return pertenceAoMesEAno && eDeAlunoAtivo;
           })
           .map(m => {
             const aluno = this.listaAlunos.find(a => String(a.id) === String(m.alunoId));
-            return { ...m, alunoNome: aluno ? aluno.nome : 'Aluno não encontrado' };
+            return { ...m, alunoNome: aluno ? aluno.nome : '' };
           });
 
-        const despesasMapeadas = res.despesas.map(d => {
+        const despesasMapeadas = (res.despesas ?? []).map(d => {
           let descFormatada = d.descricao;
           if (d.categoria === 6) {
             const prof = this.listaProfessores.find(p => String(p.id) === String((d as any).professorId));
