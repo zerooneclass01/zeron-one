@@ -33,6 +33,7 @@ export class FinanceiroDespesasComponent implements OnInit {
   anoAtual: number = new Date().getFullYear();
 
   balancete: Balancete = this.inicializarBalancete();
+  listaAlunosativos: any[]=[];
   listaAlunos: any[] = [];
   listaProfessores: any[] = [];
 
@@ -61,11 +62,12 @@ export class FinanceiroDespesasComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin({
-      alunos: this.alunoService.obterTodos().pipe(map(alunos=> (alunos ?? []).filter(aluno => aluno.ativo === true))),
+      alunos: this.alunoService.obterTodos(),
       professores: this.professorService.obterTodos()
     }).subscribe({
       next: (res) => {
-        this.listaAlunos = res.alunos;
+        this.listaAlunosativos = res.alunos ?? [];
+        this.listaAlunos = res.alunos.filter( aluno => aluno.ativo === true);
         this.listaProfessores = res.professores;
         this.carregarDados();
       },
